@@ -63,12 +63,6 @@
     };
   };
 
-  docker_context = {
-    symbol = " ";
-    style = "bg:#06969A";
-    format = "[ $symbol $context ]($style)";
-  };
-
   git_branch = {
     symbol = "";
     style = "bg:#FCA17D";
@@ -87,6 +81,7 @@
   };
 
   gradle = {
+    symbol = " ";
     style = "bg:#86BBD8";
     format = "[ $symbol ($version) ]($style)";
   };
@@ -107,6 +102,12 @@
     symbol = "";
     style = "bg:#86BBD8";
     format = "[ $symbol ($version) ]($style)";
+  };
+
+  docker_context = {
+    symbol = " ";
+    style = "bg:#06969A";
+    format = "[ $symbol $context ]($style)";
   };
 
   time = {
