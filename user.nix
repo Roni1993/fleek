@@ -14,7 +14,7 @@
   };
   programs.starship = {
     enable = true;
-    config = {
+    settings = {
 	format = """
 	[](#9A348E)\
 	$os\
