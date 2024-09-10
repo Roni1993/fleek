@@ -56,7 +56,7 @@ paths:
     - $HOME/.local/bin
 programs:
     - dircolors
-shell: bash
+shell: nushell
 systems:
     - arch: x86_64
       home: ""
