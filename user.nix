@@ -3,4 +3,4 @@
   programs.gh = {
     enable = true;
   };
-};
+}
