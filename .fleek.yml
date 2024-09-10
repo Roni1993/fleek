@@ -1,0 +1,72 @@
+aliases:
+    fleeks: cd ~/.local/share/fleek
+    latest-fleek-version: nix run https://getfleek.dev/latest.tar.gz -- version
+    update-fleek: nix run https://getfleek.dev/latest.tar.gz -- update
+allow_broken: false
+auto_gc: true
+bling: default
+blocklist: []
+byo_git: false
+ejected: false
+flakedir: .local/share/fleek
+git:
+    autocommit: true
+    autopull: true
+    autopush: true
+    enabled: true
+min_version: 0.8.4
+name: Fleek Configuration
+overlays: {}
+packages:
+    - helix
+    - eza
+    - fd
+    - ripgrep
+      #    - igrep
+    - bat
+    - tree
+    - jq
+    - jtc
+    - gh
+    - zip
+    - unzip
+    - wget
+    - curl
+    - neovim
+    - lunarvim
+    - nushell
+    - starship
+    - carapace
+    - cheat
+    - fzf
+    - zoxide
+    - tilt
+    - kubectl
+    - kubectx
+    - helm
+    - krew
+    - dive
+    - lazygit
+    - wslu
+    - wsl-open
+paths:
+    - $HOME/bin
+    - $HOME/.local/bin
+programs:
+    - dircolors
+shell: bash
+systems:
+    - arch: x86_64
+      home: ""
+      hostname: DESKTOP-7UE031Q
+      os: linux
+      user:
+        email: roman.weintraub@gmail.com
+        name: Roman
+        ssh_private_key_file: ""
+        ssh_public_key_file: ""
+        username: roni
+      username: roni
+track: nixos-unstable
+unfree: true
+users: []
