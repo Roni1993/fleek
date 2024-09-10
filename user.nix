@@ -114,5 +114,9 @@
   };
   programs.atuin = {
     enable = true;
+    settings = {
+      inline_height = 10;
+      enter_accept = true;
+    };
   };
 }
