@@ -1,4 +1,4 @@
-{ pkgs, misc, users, ... }: {
+{ pkgs, misc, users, lib, config, ... }: {
   # FEEL FREE TO EDIT: This file is NOT managed by fleek. 
   users.defaultUserShell = pkgs.nushell;
   programs.gh = {
