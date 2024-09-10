@@ -5,13 +5,13 @@
   };
   programs.nushell = {
     enable = true;
-  }
+  };
   programs.zoxide = {
     enable = true;
-  }
+  };
   programs.thefuck = {
     enable = true;
-  }
+  };
   programs.starship = {
     enable = true;
     config = {
@@ -161,22 +161,22 @@
 	format = '[ ♥ $time ]($style)'
 
     };
-  }
+  };
   programs.eza = {
     enable = true;
     git = true;
     icons = true;
-  }
+  };
   programs.direnv = {
     enable = true;
-  }
+  };
   programs.carapace = {
     enable = true;
-  }
+  };
   programs.broot = {
     enable = true;
-  }
+  };
   programs.atuin = {
     enable = true;
-  }
+  };
 }
