@@ -1,6 +1,6 @@
-{ pkgs, misc, ... }: {
+{ pkgs, misc, users, ... }: {
   # FEEL FREE TO EDIT: This file is NOT managed by fleek. 
-  users.defaultUserShell = pkgs.fish;
+  users.defaultUserShell = pkgs.nushell;
   programs.gh = {
     enable = true;
   };
