@@ -16,25 +16,32 @@
     enable = true;
     settings = {
   format = ''
-    [](#9A348E)\
-    $os\
-    $username\
-    [](bg:#DA627D fg:#9A348E)\
-    $directory\
-    [](fg:#DA627D bg:#FCA17D)\
-    $git_branch\
-    $git_status\
-    [](fg:#FCA17D bg:#86BBD8)\
-    $golang\
-    $gradle\
-    $java\
-    $nodejs\
-    $rust\
-    [](fg:#86BBD8 bg:#06969A)\
-    $docker_context\
-    [](fg:#06969A bg:#33658A)\
-    $time\
-    [ ](fg:#33658A)\
+[](#9A348E)\
+$os\
+$username\
+[](bg:#DA627D fg:#9A348E)\
+$directory\
+[](fg:#DA627D bg:#FCA17D)\
+$git_branch\
+$git_status\
+[](fg:#FCA17D bg:#86BBD8)\
+$c\
+$elixir\
+$elm\
+$golang\
+$gradle\
+$haskell\
+$java\
+$julia\
+$nodejs\
+$nim\
+$rust\
+$scala\
+[](fg:#86BBD8 bg:#06969A)\
+$docker_context\
+[](fg:#06969A bg:#33658A)\
+$time\
+[ ](fg:#33658A)\  
   '';
 
   username = {
@@ -56,15 +63,15 @@
     truncation_length = 3;
     truncation_symbol = "…/";
     substitutions = {
-      Documents = "󰈙 ";
-      Downloads = " ";
-      Music = " ";
-      Pictures = " ";
+      Documents = "󰈙";
+      Downloads = "";
+      Music = "";
+      Pictures = "";
     };
   };
 
   git_branch = {
-    symbol = "";
+    symbol = "";
     style = "bg:#FCA17D";
     format = "[ $symbol $branch ]($style)";
   };
@@ -75,37 +82,36 @@
   };
 
   golang = {
-    symbol = " ";
+    symbol = "";
     style = "bg:#86BBD8";
     format = "[ $symbol ($version) ]($style)";
   };
 
   gradle = {
-    symbol = " ";
     style = "bg:#86BBD8";
     format = "[ $symbol ($version) ]($style)";
   };
 
   java = {
-    symbol = " ";
+    symbol = "";
     style = "bg:#86BBD8";
     format = "[ $symbol ($version) ]($style)";
   };
 
   nodejs = {
-    symbol = "";
+    symbol = "";
     style = "bg:#86BBD8";
     format = "[ $symbol ($version) ]($style)";
   };
 
   rust = {
-    symbol = "";
+    symbol = "";
     style = "bg:#86BBD8";
     format = "[ $symbol ($version) ]($style)";
   };
 
   docker_context = {
-    symbol = " ";
+    symbol = "";
     style = "bg:#06969A";
     format = "[ $symbol $context ]($style)";
   };
