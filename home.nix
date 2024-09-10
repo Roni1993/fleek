@@ -39,8 +39,11 @@
     pkgs.starship
     pkgs.carapace
     pkgs.cheat
+    pkgs.thefuck
     pkgs.fzf
     pkgs.zoxide
+    pkgs.atuin
+    pkgs.broot
     pkgs.tilt
     pkgs.kubectl
     pkgs.kubectx

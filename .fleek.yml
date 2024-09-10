@@ -22,7 +22,6 @@ packages:
     - eza
     - fd
     - ripgrep
-      #    - igrep
     - bat
     - tree
     - jq
@@ -38,8 +37,11 @@ packages:
     - starship
     - carapace
     - cheat
+    - thefuck
     - fzf
     - zoxide
+    - atuin
+    - broot
     - tilt
     - kubectl
     - kubectx
