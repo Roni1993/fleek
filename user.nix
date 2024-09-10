@@ -1,6 +1,5 @@
-{ pkgs, misc, users, lib, config, ... }: {
+{ pkgs, misc, ... }: {
   # FEEL FREE TO EDIT: This file is NOT managed by fleek. 
-  users.defaultUserShell = pkgs.bash;
   programs.gh = {
     enable = true;
   };
@@ -119,4 +118,5 @@
       enter_accept = true;
     };
   };
+  users.users.roni.shell = pkgs.fish;
 }
