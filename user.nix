@@ -3,5 +3,5 @@
   programs.gh = {
     enable = true
     
-  }
-}
+  };
+};
