@@ -1,4 +1,4 @@
-{ pkgs, misc, ... }: {
+{ config, pkgs, misc, ... }: {
   # FEEL FREE TO EDIT: This file is NOT managed by fleek. 
   programs.gh = {
     enable = true;
