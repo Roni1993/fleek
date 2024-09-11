@@ -63,7 +63,7 @@ programs:
     - zoxide
     - thefuck
     - starship
-    - direnvs
+    - direnv
     - carapace
     - broot
     - atuin

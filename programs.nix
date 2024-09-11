@@ -14,7 +14,7 @@
     programs.zoxide.enable = true; 
     programs.thefuck.enable = true; 
     programs.starship.enable = true; 
-    programs.direnvs.enable = true; 
+    programs.direnv.enable = true; 
     programs.carapace.enable = true; 
     programs.broot.enable = true; 
     programs.atuin.enable = true;
