@@ -61,7 +61,6 @@ programs:
     - gh
     - zoxide
     - thefuck
-    - direnv
     - starship
     - carapace
     - broot
