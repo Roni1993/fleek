@@ -56,6 +56,16 @@ paths:
     - $HOME/.local/bin
 programs:
     - dircolors
+    - eza
+    - nushell
+    - gh
+    - zoxide
+    - thefuck
+    - direnv
+    - starship
+    - carapace
+    - broot
+    - atuin
 shell: bash
 systems:
     - arch: x86_64
@@ -82,9 +92,4 @@ systems:
       username: nixos
 track: nixos-unstable
 unfree: true
-users:
-    - email: fleek@fleek.dev
-      name: Ubuntu
-      ssh_private_key_file: ""
-      ssh_public_key_file: ""
-      username: ubuntu
+users: []

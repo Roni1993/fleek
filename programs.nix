@@ -9,6 +9,16 @@
     programs.starship.enable = true;
 
   # User specified programs 
-    programs.dircolors.enable = true;
+    programs.dircolors.enable = true; 
+    programs.eza.enable = true; 
+    programs.nushell.enable = true; 
+    programs.gh.enable = true; 
+    programs.zoxide.enable = true; 
+    programs.thefuck.enable = true; 
+    programs.direnv.enable = true; 
+    programs.starship.enable = true; 
+    programs.carapace.enable = true; 
+    programs.broot.enable = true; 
+    programs.atuin.enable = true;
 
 }

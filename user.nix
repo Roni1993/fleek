@@ -1,20 +1,7 @@
 { config, pkgs, misc, ... }: {
   # FEEL FREE TO EDIT: This file is NOT managed by fleek. 
-  programs.gh = {
-    enable = true;
-  };
-  programs.nushell = {
-    enable = true;
-  };
-  programs.zoxide = {
-    enable = true;
-  };
-  programs.thefuck = {
-    enable = true;
-  };
-  programs.starship = {
-    enable = true;
-    settings = {
+  users.defaultUserShell = pkgs.nushell
+  programs.starship.settings = {
   format = "[](#9A348E)$os$username[](bg:#DA627D fg:#9A348E)$directory[](fg:#DA627D bg:#FCA17D)$git_branch$git_status[](fg:#FCA17D bg:#86BBD8)$golang$gradle$java$nodejs$rust[](fg:#86BBD8 bg:#06969A)$docker_context[](fg:#06969A bg:#33658A)$time[ ](fg:#33658A)";
 
   username = {
@@ -95,27 +82,13 @@
     style = "bg:#33658A";
     format = "[ ♥ $time ]($style)";
   };
-};
   };
   programs.eza = {
-    enable = true;
     git = true;
     icons = true;
   };
-  programs.direnv = {
-    enable = true;
-  };
-  programs.carapace = {
-    enable = true;
-  };
-  programs.broot = {
-    enable = true;
-  };
-  programs.atuin = {
-    enable = true;
-    settings = {
-      inline_height = 20;
-      enter_accept = true;
-    };
+  programs.atuin.settings = {
+    inline_height = 20;
+    enter_accept = true;
   };
 }
