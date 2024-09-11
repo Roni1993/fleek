@@ -69,9 +69,20 @@ systems:
         ssh_public_key_file: ""
         username: roni
       username: roni
+    - arch: x86_64
+      home: ""
+      hostname: nixos
+      os: linux
+      user:
+        email: roman.weintraub@gmail.com
+        name: Roman Weintraub
+        ssh_private_key_file: ""
+        ssh_public_key_file: ""
+        username: nixos
+      username: nixos
 track: nixos-unstable
 unfree: true
-users: 
+users:
     - email: fleek@fleek.dev
       name: Ubuntu
       ssh_private_key_file: ""
