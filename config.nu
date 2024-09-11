@@ -1,4 +1,4 @@
-let $config = {
+$env.config = {
   completions: {
     algorithm: fuzzy
   }
