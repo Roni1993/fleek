@@ -1,7 +1,7 @@
 { config, pkgs, misc, ... }: {
   # FEEL FREE TO EDIT: This file is NOT managed by fleek. 
   programs.bash.initExtra = "nu && exit";
-  programs.nushell.configFile.source = config.nu;
+  programs.nushell.configFile.source = "config.nu";
   programs.starship.settings = {
     format = "[](#9A348E)$os$username[](bg:#DA627D fg:#9A348E)$directory[](fg:#DA627D bg:#FCA17D)$git_branch$git_status[](fg:#FCA17D bg:#86BBD8)$golang$gradle$java$nodejs$rust[](fg:#86BBD8 bg:#06969A)$docker_context[](fg:#06969A bg:#33658A)$time[ ](fg:#33658A)";
   
