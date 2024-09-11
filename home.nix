@@ -32,6 +32,7 @@
     pkgs.zip
     pkgs.unzip
     pkgs.wget
+    pkgs.direnv
     pkgs.curl
     pkgs.neovim
     pkgs.lunarvim
@@ -55,13 +56,6 @@
     pkgs.wsl-open
     # Fleek Bling
     pkgs.git
-    pkgs.htop
-    pkgs.github-cli
-    pkgs.glab
-    pkgs.fzf
-    pkgs.ripgrep
-    pkgs.vscode
-    pkgs.just
     (pkgs.nerdfonts.override { fonts = [ "FiraCode" ]; })
   ];
   fonts.fontconfig.enable = true; 

@@ -4,7 +4,7 @@ aliases:
     update-fleek: nix run https://getfleek.dev/latest.tar.gz -- update
 allow_broken: false
 auto_gc: true
-bling: default
+bling: none
 blocklist: []
 byo_git: false
 ejected: false
@@ -30,6 +30,7 @@ packages:
     - zip
     - unzip
     - wget
+    - direnv
     - curl
     - neovim
     - lunarvim
@@ -62,6 +63,7 @@ programs:
     - zoxide
     - thefuck
     - starship
+    - direnvs
     - carapace
     - broot
     - atuin
