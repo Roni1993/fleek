@@ -71,4 +71,9 @@ systems:
       username: roni
 track: nixos-unstable
 unfree: true
-users: []
+users: 
+    - email: fleek@fleek.dev
+      name: Ubuntu
+      ssh_private_key_file: ""
+      ssh_public_key_file: ""
+      username: ubuntu

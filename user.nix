@@ -118,5 +118,4 @@
       enter_accept = true;
     };
   };
-  users.users.roni.shell = pkgs.fish;
 }
