@@ -1,6 +1,5 @@
 let $config = {
-  filesize_metric: false
-  table_mode: rounded
-  use_ls_colors: true
-  completion_algorithm: fuzzy
+  completions: {
+    algorithm: fuzzy
+  }
 }
