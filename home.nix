@@ -54,6 +54,7 @@
     pkgs.lazygit
     pkgs.wslu
     pkgs.wsl-open
+    pkgs.devbox
     # Fleek Bling
     pkgs.git
     (pkgs.nerdfonts.override { fonts = [ "FiraCode" ]; })

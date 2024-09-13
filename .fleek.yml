@@ -52,6 +52,7 @@ packages:
     - lazygit
     - wslu
     - wsl-open
+    - devbox
 paths:
     - $HOME/bin
     - $HOME/.local/bin
