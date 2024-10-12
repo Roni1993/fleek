@@ -95,7 +95,7 @@
     git = true;
     icons = true;
   };
-  programs.atuin.flags = [ "--disable-ctrl-r"];
+  programs.atuin.flags = [ "--disable-up-arrow"];
   programs.atuin.settings = {
     inline_height = 20;
     enter_accept = true;
