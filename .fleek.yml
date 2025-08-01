@@ -19,7 +19,6 @@ name: Fleek Configuration
 overlays: {}
 packages:
     - helix
-    - eza
     - fd
     - ripgrep
     - bat
@@ -58,7 +57,6 @@ paths:
     - $HOME/.local/bin
 programs:
     - dircolors
-    - eza
     - nushell
     - gh
     - zoxide

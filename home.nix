@@ -21,7 +21,6 @@
   home.packages = [
     # user selected packages
     pkgs.helix
-    pkgs.eza
     pkgs.fd
     pkgs.ripgrep
     pkgs.bat
