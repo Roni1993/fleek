@@ -53,6 +53,9 @@
     pkgs.wslu
     pkgs.wsl-open
     pkgs.devbox
+    pkgs.aider-chat
+    pkgs.glow
+    pkgs.usbutils
     # Fleek Bling
     pkgs.git
     (pkgs.nerdfonts.override { fonts = [ "FiraCode" ]; })
