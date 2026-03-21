@@ -1,14 +1,14 @@
 { ... }: {
   programs.git = {
     enable = true;
-    aliases = {
-      pushall = "!git remote | xargs -L1 git push --all";
-      graph = "log --decorate --oneline --graph";
-      add-nowhitespace = "!git diff -U0 -w --no-color | git apply --cached --ignore-whitespace --unidiff-zero -";
-    };
-    userName = "Roman Weintraub";
-    userEmail = "roman.weintraub@gmail.com"; # Update this to your work email.
-    extraConfig = {
+    settings = {
+      user.name = "Roman Weintraub";
+      user.email = "roman.weintraub@gmail.com"; # Update this to your work email.
+      alias = {
+        pushall = "!git remote | xargs -L1 git push --all";
+        graph = "log --decorate --oneline --graph";
+        add-nowhitespace = "!git diff -U0 -w --no-color | git apply --cached --ignore-whitespace --unidiff-zero -";
+      };
       feature.manyFiles = true;
       init.defaultBranch = "main";
       gpg.format = "ssh";

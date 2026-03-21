@@ -28,7 +28,6 @@
     pkgs.direnv
     pkgs.curl
     pkgs.neovim
-    pkgs.lunarvim
     pkgs.nushell
     pkgs.starship
     pkgs.carapace
@@ -48,12 +47,13 @@
     pkgs.wsl-open
     pkgs.devbox
     pkgs.aider-chat
+    pkgs.opencode
+    pkgs.delta
     pkgs.glow
     pkgs.usbutils
     pkgs.git
   ];
   fonts.fontconfig.enable = true; 
-  home.stateVersion =
-    "22.11"; # To figure this out (in-case it changes) you can comment out the line and see what version it expected.
+  home.stateVersion = "22.11";
   programs.home-manager.enable = true;
 }
