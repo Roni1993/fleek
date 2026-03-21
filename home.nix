@@ -1,5 +1,4 @@
 { config, pkgs, misc, ... }: {
-  # DO NOT EDIT: This file is managed by fleek. Manual changes will be overwritten.
   nixpkgs = {
     # Configure your nixpkgs instance
     config = {
@@ -14,12 +13,7 @@
   };
 
   
-  # managed by fleek, modify ~/.fleek.yml to change installed packages
-  
-  # packages are just installed (no configuration applied)
-  # programs are installed and configuration applied to dotfiles
   home.packages = [
-    # user selected packages
     pkgs.helix
     pkgs.fd
     pkgs.ripgrep
@@ -56,7 +50,6 @@
     pkgs.aider-chat
     pkgs.glow
     pkgs.usbutils
-    # Fleek Bling
     pkgs.git
   ];
   fonts.fontconfig.enable = true; 

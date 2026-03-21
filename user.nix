@@ -1,5 +1,5 @@
 { config, pkgs, misc, ... }: {
-  # FEEL FREE TO EDIT: This file is NOT managed by fleek. 
+  # Shared user-level customizations.
   programs.bash.initExtra = "nu && exit";
   programs.nushell = {
     configFile.source = ./config.nu;
