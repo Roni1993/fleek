@@ -13,6 +13,7 @@
     pkgs.dive
     pkgs.devbox
     pkgs.aider-chat
+    pkgs.aws-sso-cli
   ];
 
   programs.git = {
