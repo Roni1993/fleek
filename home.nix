@@ -1,5 +1,4 @@
 { config, pkgs, misc, ... }: {
-  # DO NOT EDIT: This file is managed by fleek. Manual changes will be overwritten.
   nixpkgs = {
     # Configure your nixpkgs instance
     config = {
@@ -14,12 +13,7 @@
   };
 
   
-  # managed by fleek, modify ~/.fleek.yml to change installed packages
-  
-  # packages are just installed (no configuration applied)
-  # programs are installed and configuration applied to dotfiles
   home.packages = [
-    # user selected packages
     pkgs.helix
     pkgs.fd
     pkgs.ripgrep
@@ -34,7 +28,6 @@
     pkgs.direnv
     pkgs.curl
     pkgs.neovim
-    pkgs.lunarvim
     pkgs.nushell
     pkgs.starship
     pkgs.carapace
@@ -54,13 +47,13 @@
     pkgs.wsl-open
     pkgs.devbox
     pkgs.aider-chat
+    pkgs.opencode
+    pkgs.delta
     pkgs.glow
     pkgs.usbutils
-    # Fleek Bling
     pkgs.git
   ];
   fonts.fontconfig.enable = true; 
-  home.stateVersion =
-    "22.11"; # To figure this out (in-case it changes) you can comment out the line and see what version it expected.
+  home.stateVersion = "22.11";
   programs.home-manager.enable = true;
 }
