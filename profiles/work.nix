@@ -1,6 +1,5 @@
 { pkgs, lib, ... }: {
   # Work-specific program modules
-  programs.opencode.enable = true;
   programs.claude-code.enable = true;
 
   # GPG + pass for aws-sso SecureStore backend

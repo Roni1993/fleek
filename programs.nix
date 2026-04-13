@@ -3,6 +3,7 @@
   # Work- or private-specific program enables live in profiles/work.nix
   # and profiles/private.nix respectively.
 
+  programs.opencode.enable = true;
   programs.dircolors.enable = true;
   programs.nushell.enable = true;
   programs.gh.enable = true;
