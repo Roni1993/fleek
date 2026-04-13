@@ -1,5 +1,19 @@
-{ ... }: {
+{ pkgs, ... }: {
+  # Work-specific program modules
+  programs.opencode.enable = true;
   programs.claude-code.enable = true;
+
+  # Work-specific packages (k8s / devops toolchain)
+  home.packages = [
+    pkgs.tilt
+    pkgs.kubectl
+    pkgs.kubectx
+    pkgs.helm
+    pkgs.krew
+    pkgs.dive
+    pkgs.devbox
+    pkgs.aider-chat
+  ];
 
   programs.git = {
     enable = true;
@@ -26,4 +40,3 @@
     ignores = [ ".direnv" "result" ];
   };
 }
-
