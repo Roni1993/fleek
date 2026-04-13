@@ -46,16 +46,8 @@
       fi
     '';
 
-  # Work-specific packages (k8s / devops toolchain + GPG/pass for aws-sso)
+  # Work-specific packages (AWS SSO toolchain + GPG/pass)
   home.packages = [
-    pkgs.tilt
-    pkgs.kubectl
-    pkgs.kubectx
-    pkgs.helm
-    pkgs.krew
-    pkgs.dive
-    pkgs.devbox
-    pkgs.aider-chat
     pkgs.aws-sso-cli
     pkgs.pass
     pkgs.gnupg

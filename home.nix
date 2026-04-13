@@ -29,6 +29,14 @@
     pkgs.usbutils
     pkgs.wslu
     pkgs.wsl-open
+    pkgs.tilt
+    pkgs.kubectl
+    pkgs.kubectx
+    pkgs.helm
+    pkgs.krew
+    pkgs.dive
+    pkgs.devbox
+    pkgs.aider-chat
   ];
 
   fonts.fontconfig.enable = true;
