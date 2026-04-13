@@ -36,7 +36,6 @@
     pkgs.krew
     pkgs.dive
     pkgs.devbox
-    pkgs.aider-chat
   ];
 
   fonts.fontconfig.enable = true;
