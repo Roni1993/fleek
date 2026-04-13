@@ -13,7 +13,20 @@
     defaultCacheTtl = 28800;
     maxCacheTtl = 28800;
     pinentry.package = pkgs.pinentry-curses;
+    # Prevent gpg-agent from trying the D-Bus secret-service (unavailable in WSL)
+    noAllowExternalCache = true;
+    # Allow loopback pinentry so GPG_TTY-based prompts work in the terminal
+    extraConfig = ''
+      allow-loopback-pinentry
+    '';
   };
+
+  # GPG_TTY must be set so pinentry-curses knows which terminal to use.
+  # The HM nushell integration sets $env.GPG_TTY but only works when nushell
+  # is started interactively with a real TTY; we make it explicit here as well.
+  programs.bash.initExtra = ''
+    export GPG_TTY=$(tty)
+  '';
 
   # Patch SecureStore: pass into the existing aws-sso config.
   # We use an activation script rather than xdg.configFile so we don't clobber
