@@ -30,4 +30,70 @@ $env.config = {
     normal: "%Y-%m-%d %H:%M:%S"
     table: "%Y-%m-%d"
   }
+
+  menus: [
+    # Primary completion menu — bordered, shows up on Tab
+    {
+      name: completion_menu
+      only_buffer_difference: false
+      marker: "| "
+      type: {
+        layout: columnar
+        columns: 1
+        col_width: 40
+        col_padding: 2
+      }
+      style: {
+        text: green
+        selected_text: { attr: r }
+        description_text: yellow
+        match_text: { attr: u }
+        selected_match_text: { attr: ur }
+      }
+    }
+    # Description menu — triggered with F1, shows a preview pane
+    {
+      name: description_menu
+      only_buffer_difference: false
+      marker: "? "
+      type: {
+        layout: description
+        columns: 1
+        col_width: 40
+        col_padding: 2
+        selection_rows: 10
+        description_rows: 10
+      }
+      style: {
+        text: green
+        selected_text: { attr: r }
+        description_text: yellow
+        match_text: { attr: u }
+        selected_match_text: { attr: ur }
+      }
+    }
+  ]
+
+  keybindings: [
+    {
+      name: completion_menu
+      modifier: none
+      keycode: tab
+      mode: [emacs vi_normal vi_insert]
+      event: {
+        until: [
+          { send: menu name: completion_menu }
+          { send: menunext }
+          { edit: complete }
+        ]
+      }
+    }
+    {
+      name: description_menu
+      modifier: none
+      keycode: f1
+      mode: [emacs vi_normal vi_insert]
+      event: { send: menu name: description_menu }
+    }
+  ]
 }
