@@ -1,7 +1,11 @@
 { pkgs, misc, ... }: {
+  # Programs with Home Manager modules that are shared across all profiles.
+  # Work- or private-specific program enables live in profiles/work.nix
+  # and profiles/private.nix respectively.
+
+  programs.opencode.enable = true;
   programs.dircolors.enable = true;
   programs.nushell.enable = true;
-  programs.opencode.enable = true;
   programs.gh.enable = true;
   programs.zoxide.enable = true;
   programs.starship.enable = true;
@@ -17,5 +21,4 @@
     line-numbers = true;
     side-by-side = true;
   };
-
 }
