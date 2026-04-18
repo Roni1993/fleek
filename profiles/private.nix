@@ -1,4 +1,19 @@
-{ ... }: {
+{ lib, ... }: {
+  # Install pi coding agent (npm) and graphify (pip) imperatively
+  home.activation.installPiAgent = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if ! command -v pi &>/dev/null; then
+      echo "Installing @mariozechner/pi-coding-agent..."
+      npm install -g @mariozechner/pi-coding-agent
+    fi
+  '';
+
+  home.activation.installGraphify = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if ! command -v graphify &>/dev/null; then
+      echo "Installing graphifyy..."
+      pip install --user graphifyy
+    fi
+  '';
+
   programs.git = {
     enable = true;
     settings = {
