@@ -36,6 +36,8 @@
     pkgs.krew
     pkgs.dive
     pkgs.devbox
+    pkgs.go
+    pkgs.awscli2
   ];
 
   fonts.fontconfig.enable = true;

@@ -1,4 +1,4 @@
-{ ... }: {
+{ lib, ... }: {
   programs.git = {
     enable = true;
     settings = {
@@ -23,4 +23,3 @@
     ignores = [ ".direnv" "result" ];
   };
 }
-
