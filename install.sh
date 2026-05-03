@@ -20,11 +20,15 @@ need() {
   command -v "$1" &>/dev/null || die "'$1' is required but not found. Install it and retry."
 }
 
+# Detect WSL early — used in multiple sections below
+IS_WSL=false
+grep -qi microsoft /proc/version 2>/dev/null && IS_WSL=true
+
 # ── 1. System prerequisites ────────────────────────────────────────────────────
 info "Updating apt and installing prerequisites"
 sudo apt-get update -qq
 sudo apt-get install -y -qq \
-  curl git ca-certificates gnupg lsb-release xz-utils
+  curl git ca-certificates gnupg lsb-release xz-utils iptables
 
 # ── 2. Docker CE ───────────────────────────────────────────────────────────────
 if command -v docker &>/dev/null; then
@@ -45,6 +49,29 @@ https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
   ok "Docker CE installed"
 fi
 
+# ── WSL2 Docker networking fixes ───────────────────────────────────────────────
+# Ubuntu ships iptables pointing at the nft backend (iptables v1.8.x (nf_tables))
+# which breaks Docker's bridge networking — containers can't reach each other or
+# the internet. Fix: switch to the legacy backend.
+#
+# References:
+#   https://github.com/moby/moby/issues/46127   (bridge fully down with nft)
+#   https://github.com/docker/for-linux/issues/1472 (nftables compatibility)
+#   https://github.com/microsoft/WSL/issues/4133 (WSL2 bridge networking)
+#
+# Note: if you are using WSL2 *mirrored* networking mode, TCP connections inside
+# containers may still stall (moby/moby#48201, still open upstream). The fix there
+# is net.bridge.bridge-nf-call-iptables=0, but that setting disables iptables
+# processing of bridged traffic and can break Docker's own NAT rules when used
+# together with iptables-legacy. Only apply it if iptables-legacy alone is not
+# enough, and prefer NAT networking mode in .wslconfig for Docker workloads.
+if $IS_WSL; then
+  info "WSL2 detected — applying iptables-legacy fix for Docker bridge networking"
+  sudo update-alternatives --set iptables  /usr/sbin/iptables-legacy
+  sudo update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
+  ok "iptables-legacy set as default"
+fi
+
 # Add current user to docker group so no sudo needed
 if ! groups | grep -qw docker; then
   info "Adding $USER to docker group"
@@ -53,9 +80,9 @@ if ! groups | grep -qw docker; then
 fi
 
 # On WSL, dockerd doesn't run as a system service automatically — start it if needed
-if grep -qi microsoft /proc/version 2>/dev/null; then
+if $IS_WSL; then
   if ! sudo service docker status &>/dev/null; then
-    info "WSL detected — starting Docker daemon"
+    info "Starting Docker daemon"
     sudo service docker start
   fi
 fi
