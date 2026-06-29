@@ -27,8 +27,8 @@
     pkgs.lazygit
     pkgs.glow
     pkgs.usbutils
-    pkgs.wslu
     pkgs.wsl-open
+    (pkgs.lib.getBin pkgs.postgresql)
     pkgs.tilt
     pkgs.kubectl
     pkgs.kubectx

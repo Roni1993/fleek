@@ -65,7 +65,7 @@
       feature.manyFiles = true;
       init.defaultBranch = "main";
       gpg.format = "ssh";
-      credentials.helper = "cache --timeout 86400";
+      credential.helper = "cache --timeout 86400";
     };
 
     signing = {
