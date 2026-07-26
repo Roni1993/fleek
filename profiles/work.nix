@@ -45,11 +45,13 @@
       fi
     '';
 
-  # Work-specific packages (AWS SSO toolchain + GPG/pass)
-  home.packages = [
-    pkgs.aws-sso-cli
-    pkgs.pass
-    pkgs.gnupg
+  # Work-specific packages (AWS SSO toolchain + GPG/pass + WSL utils)
+  home.packages = with pkgs; [
+    wslu
+    wsl-open
+    aws-sso-cli
+    pass
+    gnupg
     # rtk (Rust Token Killer, https://github.com/rtk-ai/rtk) — CLI proxy that
     # condenses command output before it reaches Claude Code. Wired up via the
     # `rtk hook claude` PreToolUse hook in ~/.claude/settings.json. Not in

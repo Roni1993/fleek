@@ -9,6 +9,10 @@
     home-manager.url = "https://flakehub.com/f/nix-community/home-manager/0.1.tar.gz";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
+    # Theming — used by gaming profile
+    stylix.url = "github:danth/stylix";
+    stylix.inputs.nixpkgs.follows = "nixpkgs";
+
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs:
@@ -23,66 +27,73 @@
         ./shell.nix
         ./user.nix
         ./programs.nix
-      ];
-      mkHome = modules:
-        home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          extraSpecialArgs = { inherit inputs; };
-          inherit modules;
-        };
-      mkProfile = modules: mkHome (sharedModules ++ modules ++ [ { nixpkgs.overlays = []; } ]);
-      applyCurrentScript = pkgs.writeShellScript "apply-current" ''
-        set -euo pipefail
+  ];
+       mkHome = modules:
+         home-manager.lib.homeManagerConfiguration {
+           inherit pkgs;
+           extraSpecialArgs = { inherit inputs; };
+           inherit modules;
+         };
+       mkProfile = modules: mkHome (sharedModules ++ modules ++ [ { nixpkgs.overlays = []; } ]);
+       applyCurrentScript = pkgs.writeShellScript "apply-current" ''
+         set -euo pipefail
 
-        environment=""
-        case "''${1:-}" in
-          work|w|WORK|Work|private|p|PRIVATE|Private)
-            environment="$1"
-            shift
-            ;;
-        esac
+         environment=""
+         case "''${1:-}" in
+           work|w|WORK|Work|private|p|PRIVATE|Private|gaming|g|GAMING|Gaming)
+             environment="$1"
+             shift
+             ;;
+         esac
 
-        if [ -z "$environment" ]; then
-          printf "Environment [work/private]: " >&2
-          read -r environment
-        fi
+         if [ -z "$environment" ]; then
+           printf "Environment [work/private/gaming]: " >&2
+           read -r environment
+         fi
 
-        case "$environment" in
-          work|w|WORK|Work)
-            environment="work"
-            ;;
-          private|p|PRIVATE|Private)
-            environment="private"
-            ;;
-          *)
-            echo "Please choose 'work' or 'private'." >&2
-            exit 1
-            ;;
-        esac
+         case "$environment" in
+           work|w|WORK|Work)
+             environment="work"
+             ;;
+           private|p|PRIVATE|Private)
+             environment="private"
+             ;;
+           gaming|g|GAMING|Gaming)
+             environment="gaming"
+             ;;
+           *)
+             echo "Please choose 'work', 'private', or 'gaming'." >&2
+             exit 1
+             ;;
+         esac
 
-        case "$USER:$environment" in
-          "roni:work")
-            target="roni@work"
-            ;;
-          "roni:private")
-            target="roni@private"
-            ;;
-          "nixos:work")
-            target="nixos@work"
-            ;;
-          "nixos:private")
-            echo "No private profile exists for user nixos." >&2
-            exit 1
-            ;;
-          *)
-            echo "No home configuration found for user '$USER' in environment '$environment'." >&2
-            echo "Available targets:" >&2
-            echo "  roni@private" >&2
-            echo "  roni@work" >&2
-            echo "  nixos@work" >&2
-            exit 1
-            ;;
-        esac
+         case "$USER:$environment" in
+           "roni:work")
+             target="roni@work"
+             ;;
+           "roni:private")
+             target="roni@private"
+             ;;
+           "roni:gaming")
+             target="roni@gaming"
+             ;;
+           "nixos:work")
+             target="nixos@work"
+             ;;
+           "nixos:private")
+             echo "No private profile exists for user nixos." >&2
+             exit 1
+             ;;
+           *)
+             echo "No home configuration found for user '$USER' in environment '$environment'." >&2
+             echo "Available targets:" >&2
+             echo "  roni@private" >&2
+             echo "  roni@work" >&2
+             echo "  roni@gaming" >&2
+             echo "  nixos@work" >&2
+             exit 1
+             ;;
+         esac
 
         exec ${homeManagerBin} switch --flake "${repoPath}#''${target}" "$@"
       '';
@@ -112,6 +123,7 @@
         };
         apply-work = mkEnvironmentApp "work";
         apply-private = mkEnvironmentApp "private";
+        apply-gaming = mkEnvironmentApp "gaming";
       };
 
       homeConfigurations = {
@@ -129,6 +141,12 @@
           ./users/roni.nix
           ./profiles/private.nix
         ];
+
+        "roni@gaming" = mkHome (sharedModules ++ [
+          inputs.stylix.homeManagerModules.stylix
+          ./users/roni.nix
+          ./profiles/gaming.nix
+        ] ++ [ { nixpkgs.overlays = []; } ]);
       };
     };
 }
