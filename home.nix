@@ -27,8 +27,8 @@
     pkgs.lazygit
     pkgs.glow
     pkgs.usbutils
-    pkgs.wslu
     pkgs.wsl-open
+    (pkgs.lib.getBin pkgs.postgresql)
     pkgs.tilt
     pkgs.kubectl
     pkgs.kubectx
@@ -38,6 +38,7 @@
     pkgs.devbox
     pkgs.go
     pkgs.awscli2
+    pkgs.nodejs # provides node, npm, and npx
   ];
 
   fonts.fontconfig.enable = true;
