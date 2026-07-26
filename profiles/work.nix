@@ -50,6 +50,24 @@
     pkgs.aws-sso-cli
     pkgs.pass
     pkgs.gnupg
+    # rtk (Rust Token Killer, https://github.com/rtk-ai/rtk) — CLI proxy that
+    # condenses command output before it reaches Claude Code. Wired up via the
+    # `rtk hook claude` PreToolUse hook in ~/.claude/settings.json. Not in
+    # nixpkgs; install the static musl binary from the release tarball.
+    # Bump version + sha256 to upgrade.
+    (pkgs.stdenvNoCC.mkDerivation rec {
+      pname = "rtk";
+      version = "0.43.0";
+      src = pkgs.fetchurl {
+        url = "https://github.com/rtk-ai/rtk/releases/download/v${version}/rtk-x86_64-unknown-linux-musl.tar.gz";
+        sha256 = "02d6lbz7ig0z7n4yal9yydnzzjcpvjhyqnm8j591fvj9crvix2pz";
+      };
+      dontUnpack = true;
+      installPhase = ''
+        tar -xzf $src
+        install -Dm755 "$(find . -type f -name rtk | head -n1)" $out/bin/rtk
+      '';
+    })
   ];
 
   programs.git = {
