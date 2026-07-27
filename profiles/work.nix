@@ -47,7 +47,6 @@
 
   # Work-specific packages (AWS SSO toolchain + GPG/pass + WSL utils)
   home.packages = with pkgs; [
-    wslu
     wsl-open
     aws-sso-cli
     pass
