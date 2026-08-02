@@ -52,8 +52,8 @@ fi
 section "CachyOS gaming meta-package (kernel, drivers, Steam, Wine)"
 sudo pacman -S --noconfirm --needed cachyos-gaming-meta
 
-section "AUR: gamescope-session (Steam Deck Game Mode UI)"
-paru -S --noconfirm --needed gamescope-session-git
+section "CachyOS gamescope-session (Steam Deck Game Mode UI)"
+sudo pacman -S --noconfirm --needed gamescope-session-cachyos
 
 section "AUR: hyprpolkitagent (privilege escalation for Hyprland)"
 paru -S --noconfirm --needed hyprpolkitagent
@@ -68,7 +68,12 @@ else
   warn "Run: sudo pacman -S nvidia-dkms && reboot"
 fi
 
-# ── 5. HDD setup (4 TB game library) ────────────────────────────
+# ── 5. HDD setup (NTFS staging, read-only) ──────────────────────
+# Per wayfinder #6: the 4TB HDD stays NTFS untouched through the
+# transition. It is mounted READ-ONLY at /mnt/staging so the Phase-3
+# restore (keys, Firefox profile) can read it. NO wiping, NO repartition.
+# After private data migrates to the Pi (#12), reformat to a single ext4
+# /mnt/games — that is owned by ticket #12, not this script.
 
 HDD_DEV=""
 for dev in /dev/sda /dev/sdb /dev/nvme1n1; do
@@ -87,41 +92,25 @@ if [ -z "$HDD_DEV" ]; then
   read -r HDD_DEV
 fi
 
-if [ -n "$HDD_DEV" ] && ! mount | grep -q "/mnt/games"; then
+if [ -n "$HDD_DEV" ] && ! mount | grep -q "/mnt/staging"; then
   HDD_PART="${HDD_DEV}1"
   if [ ! -b "$HDD_PART" ]; then
-    section "Partitioning $HDD_DEV as a single ext4 partition"
-    warn "This will ERASE all data on $HDD_DEV!"
-    lsblk "$HDD_DEV"
-    printf "Proceed? [y/N] "
-    read -r c
-    if [ "$c" = "y" ]; then
-      sudo parted "$HDD_DEV" -- mklabel gpt
-      sudo parted "$HDD_DEV" -- mkpart primary ext4 0% 100%
-      sleep 2
-      sudo mkfs.ext4 -F "$HDD_PART"
-    else
-      warn "Skipping HDD setup."
-      HDD_PART=""
-    fi
-  fi
-
-  if [ -n "$HDD_PART" ]; then
-    section "Mounting $HDD_PART at /mnt/games"
+    warn "No partition found on $HDD_DEV — expected NTFS part1. Skipping staging mount."
+    warn "You may need to mount it manually for the Phase-3 restore."
+  else
+    section "Mounting $HDD_PART read-only at /mnt/staging"
     HDD_UUID=$(sudo blkid -s UUID -o value "$HDD_PART")
-    sudo mkdir -p /mnt/games
+    sudo mkdir -p /mnt/staging
     if ! grep -q "$HDD_UUID" /etc/fstab; then
-      echo "UUID=$HDD_UUID  /mnt/games  ext4  defaults,noatime  0 2" | sudo tee -a /etc/fstab
+      echo "UUID=$HDD_UUID  /mnt/staging  ntfs  ro,noatime,nofail  0 0" | sudo tee -a /etc/fstab
     fi
-    sudo mount /mnt/games
-    sudo chown roni:roni /mnt/games
-
-    # Create Steam library directory structure
-    mkdir -p /mnt/games/SteamLibrary
-    echo "/mnt/games ready. Add it in Steam > Settings > Storage."
+    sudo mount /mnt/staging 2>/dev/null || sudo mount -o ro /mnt/staging || \
+      warn "Mount failed. Check the partition and fstab entry; restore data manually."
+    lsblk "$HDD_DEV"
+    echo "/mnt/staging ready (read-only). Phase-3 will restore keys + Firefox from /mnt/staging/backup-for-cachyos."
   fi
-elif mount | grep -q "/mnt/games"; then
-  section "HDD already mounted at /mnt/games"
+elif mount | grep -q "/mnt/staging"; then
+  section "HDD already mounted read-only at /mnt/staging"
 fi
 
 # ── 6. Nix installation ──────────────────────────────────────────
@@ -179,7 +168,8 @@ echo "  Next steps:"
 echo "    1. Reboot"
 echo "    2. At SDDM, select 'Hyprland' session"
 echo "    3. Login — waybar, swaync, rofi should start"
-echo "    4. Open Steam > Settings > Storage"
-echo "       Add /mnt/games/SteamLibrary"
+echo "    4. Restore keys + Firefox from /mnt/staging/backup-for-cachyos"
+echo "       (see ROADMAP.md Phase 3)"
 echo "    5. Run protonup-qt to install GE-Proton"
+echo "    6. HDD becomes a games disk later — owned by wayfinder ticket #12"
 echo "==========================================="
