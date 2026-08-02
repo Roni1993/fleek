@@ -125,7 +125,7 @@ fi
 
 section "Installing Determinate Nix"
 if ! command -v nix &>/dev/null; then
-  curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
+  curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm
   # Source nix into this shell
   . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 else
