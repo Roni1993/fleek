@@ -37,9 +37,14 @@
 
 ## Phase 1 — OS Installation (manual)
 
-- [ ] Update BIOS (ASUS ROG STRIX B560-I, currently v0503, Feb 2021)
 - [x] Download CachyOS ISO (KDE variant) → `cachyos-desktop-linux-260628.iso`
 - [x] Flash ISO to USB → `/dev/sdf` (Kingston DataTraveler 3.0, COS_202606)
+- [x] Pre-wipe backup staged to `D:\backup-for-cachyos\` (HDD, survives transition):
+  - `wsl-keys/` — WSL SSH ed25519 key + sops age key
+  - `firefox-profile/` — Firefox profile (404MB)
+  - `windows-c/` — Windows C: irreplaceables (8.3MB): `.ssh` RSA key + known_hosts, house-purchase PDFs (Dragonstraat 24 Utrecht), ZMK corne firmware (UF2 + kernel patches), GitHub token + opencode auth
+  - DECIDED to skip: other WSL distros (Debian/Ubuntu-20.04) uncommitted work, 168GB LLM models, game saves (Steam Cloud), Unreal/Godot projects
+- [ ] Update BIOS (optional, recommended) — v2405 .CAP on USB sdf3 via EZ Flash 3
 - [ ] Boot from USB, run Calamares installer:
   - Partition NVMe 2TB: `/boot/efi` (1 GB, fat32) + `/` (rest, Btrfs)
   - Leave HDD 4TB untouched (bootstrap handles it)
@@ -55,8 +60,9 @@
   - base-devel + git
   - paru (AUR helper)
   - `cachyos-gaming-meta`
-  - `gamescope-session-git` (AUR)
-  - `hyprpolkitagent` (AUR)
+  - `gamescope-session-cachyos` (prebuilt CachyOS repo — NOT AUR, research #15)
+  - `hyprpolkitagent` (Arch `extra`)
+  - HDD mounted read-only at `/mnt/staging` (NTFS untouched, per #6)
   - NVIDIA driver verification
   - HDD partitioning + fstab + mount at `/mnt/games`
   - Determinate Nix install
