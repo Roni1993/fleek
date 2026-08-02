@@ -56,6 +56,7 @@
       feature.manyFiles = true;
       init.defaultBranch = "main";
       gpg.format = "ssh";
+      credential.helper = "!gh auth git-credential";
     };
     signing = {
       key = "";

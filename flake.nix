@@ -128,7 +128,13 @@
           type = "app";
           program = "${pkgs.writeShellScript "fleek-agent" ''
             set -euo pipefail
-            cd "$HOME/projects/fleek"
+            # `nix run .#agent` opens fleek; `nix run .#agent -- <name>` opens
+            # ~/projects/<name>. e.g. nix run .#agent -- homelab
+            project="''${1:-fleek}"
+            [ $# -gt 0 ] && shift
+            dir="$HOME/projects/$project"
+            [ -d "$dir" ] || { echo "no project at $dir — run bootstrap to clone it, or check the name." >&2; exit 1; }
+            cd "$dir"
             exec opencode "$@"
           ''}";
         };

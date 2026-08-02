@@ -166,6 +166,38 @@ fi
 section "Applying gaming profile"
 nix run "$REPO_DIR#apply-gaming"
 
+# ── 8b. Project checkouts ──────────────────────────────────────
+# Clone every local project into ~/projects, mirroring the old WSL layout.
+# Format: "url|dir|branch". Skip if the dir already exists (idempotent).
+# Private repos (homelab, gameServerHosting) need `gh auth login` or an SSH
+# key added to GitHub; clone failure for them is a warning, not an abort.
+
+PROJECTS=(
+  "https://github.com/Roni1993/homelab.git|homelab|main"
+  "https://github.com/Trusty-Serva/gameServerHosting.git|gameServerHosting|main"
+  "https://github.com/thebracket/JetBrainsBevy|JetBrainsBevy|main"
+  "https://github.com/raspberrypi/pico-examples.git|pico-examples|master"
+  "https://github.com/steam-deck-controller/steam-deck-controller.git|steam-deck-controller|freertos"
+)
+
+section "Cloning projects into ~/projects"
+for entry in "${PROJECTS[@]}"; do
+  url="${entry%%|*}"; rest="${entry#*|}"; dir="${rest%%|*}"; branch="${rest#*|}"
+  target="$HOME/projects/$dir"
+  if [ -d "$target/.git" ]; then
+    echo "  $dir: already present, pulling..."
+    git -C "$target" pull --ff-only 2>/dev/null || echo "  $dir: pull skipped (uncommitted changes?)"
+  else
+    mkdir -p "$HOME/projects"
+    echo "  $dir: cloning ($branch)..."
+    if git clone --branch "$branch" --single-branch "$url" "$target" 2>/dev/null; then
+      echo "  $dir: OK"
+    else
+      warn "$dir: clone failed. If private, run \`gh auth login\` first (or add SSH key), then re-run."
+    fi
+  fi
+done
+
 # ── 9. Done ─────────────────────────────────────────────────────
 
 echo ""
