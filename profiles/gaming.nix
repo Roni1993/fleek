@@ -398,25 +398,23 @@
   };
 
   # ── Terminal — kitty (primary) ──
-  programs.kitty = {
-    enable = true;
-    font = {
-      name = "JetBrains Mono Nerd Font";
-      size = 12;
-    };
-    settings = {
-      shell = "nu";
-      confirm_os_window_close = 0;
-      window_padding_width = 8;
-      background_opacity = "0.95";
-      cursor_shape = "beam";
-      cursor_blink_interval = "0.5";
-      enable_audio_bell = false;
-      tab_bar_edge = "top";
-      tab_bar_style = "powerline";
-    };
-    extraConfig = ''
-      # Stylix injects color scheme here at build time
+  # Using system kitty (pacman) instead of nix kitty — nix kitty's bundled
+  # libglvnd crashes with NVIDIA EGL (segfault on display init).
+  # Config is managed via home.file; kitty itself stays system-provided.
+  home.file.".config/kitty/kitty.conf" = {
+    text = ''
+      font_family JetBrains Mono Nerd Font
+      font_size 12
+      shell nu
+      shell_integration no-rc
+      confirm_os_window_close 0
+      window_padding_width 8
+      background_opacity 0.95
+      cursor_shape beam
+      cursor_blink_interval 0.5
+      enable_audio_bell no
+      tab_bar_edge top
+      tab_bar_style powerline
     '';
   };
 
