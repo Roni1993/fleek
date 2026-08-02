@@ -143,7 +143,7 @@
         ];
 
         "roni@gaming" = mkHome (sharedModules ++ [
-          inputs.stylix.homeManagerModules.stylix
+          inputs.stylix.homeModules.stylix
           ./users/roni.nix
           ./profiles/gaming.nix
         ] ++ [ { nixpkgs.overlays = []; } ]);

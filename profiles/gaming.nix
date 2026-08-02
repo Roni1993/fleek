@@ -17,12 +17,12 @@
     # Gaming tools
     protonup-qt
     goverlay
-    nvtop
+    nvtopPackages.full
     gwe
     discord
 
     # Hyprland ecosystem (not HM-moduleable)
-    swww
+    awww
     nwg-displays
     hyprshot                # grim + slurp wrapper
 
@@ -36,10 +36,10 @@
     ghostty
 
     # Fonts
-    (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+    (nerd-fonts.jetbrains-mono)
     noto-fonts
     noto-fonts-cjk-sans
-    noto-fonts-emoji
+    noto-fonts-color-emoji
   ];
 
   # ── Git ──
@@ -70,6 +70,7 @@
     enable = true;
     xwayland.enable = true;
     systemd.enable = true;
+    configType = "hyprlang";
 
     settings = {
       "$mod" = "SUPER";
@@ -210,10 +211,10 @@
 
       exec-once = [
         "waybar"
-        "swww-daemon"
+        "awww-daemon"
         "swaync"
         "hypridle"
-        "/usr/lib/polkit-hyprpolkitagent/hyprpolkitagent"
+        "/usr/lib/hyprpolkitagent/hyprpolkitagent"
         "systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
         "dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
       ];
@@ -306,7 +307,7 @@
   # ── Launcher ──
   programs.rofi = {
     enable = true;
-    package = pkgs.rofi-wayland;
+    package = pkgs.rofi;
     theme = "drun";
     extraConfig = {
       modi = "drun,run";
@@ -391,7 +392,7 @@
   # ── Clipboard ──
   services.cliphist = {
     enable = true;
-    systemdTarget = "graphical-session.target";
+    systemdTargets = [ "graphical-session.target" ];
     allowImages = true;
   };
 
@@ -421,6 +422,7 @@
   # ── Browser — Firefox ──
   programs.firefox = {
     enable = true;
+    configPath = ".mozilla/firefox";
     profiles.roni = {
       settings = {
         "browser.disableResetPrompt" = true;
@@ -437,18 +439,17 @@
   };
 
   # ── Gaming tools ──
-  programs.gamemode = {
-    enable = true;
-    settings = {
-      general = {
-        renice = 10;
-        desiredgov = "performance";
-      };
-      gpu = {
-        apply_gpu_optimisations = 1;
-        gpu_device = 0;
-      };
-    };
+  # programs.gamemode was removed from home-manager; gamemode itself is
+  # installed system-wide by cachyos-gaming-meta. Config lives in ~/.config/gamemode.ini.
+  home.file.".config/gamemode.ini" = {
+    text = ''
+      [general]
+      renice=10
+      desiredgov=performance
+      [gpu]
+      apply_gpu_optimisations=1
+      gpu_device=0
+    '';
   };
 
   programs.mangohud = {
@@ -522,14 +523,14 @@
     '';
   };
 
-  # ── Wallpaper (ssww placeholder) ──
+  # ── Wallpaper (awww placeholder) ──
   home.file.".local/bin/set-wallpaper" = {
     executable = true;
     text = ''
       #!/usr/bin/env bash
       wallpaper="''${1:-$HOME/projects/fleek/profiles/wallpaper.png}"
       if [ -f "$wallpaper" ]; then
-        swww img "$wallpaper" --transition-type wipe --transition-fps 60
+        awww img "$wallpaper" --transition-type wipe --transition-fps 60
       fi
     '';
   };

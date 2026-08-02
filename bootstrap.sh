@@ -55,8 +55,8 @@ sudo pacman -S --noconfirm --needed cachyos-gaming-meta
 section "CachyOS gamescope-session (Steam Deck Game Mode UI)"
 sudo pacman -S --noconfirm --needed gamescope-session-cachyos
 
-section "AUR: hyprpolkitagent (privilege escalation for Hyprland)"
-paru -S --noconfirm --needed hyprpolkitagent
+section "hyprpolkitagent (privilege escalation for Hyprland)"
+sudo pacman -S --noconfirm --needed hyprpolkitagent
 
 # ── 4. NVIDIA verification ──────────────────────────────────────
 
