@@ -49,6 +49,13 @@ fi
 
 # ── 3. Gaming system packages ───────────────────────────────────
 
+section "NVIDIA driver stack (userspace) — must precede gaming-meta"
+# cachyos-gaming-meta depends on the virtual 'lib32-vulkan-driver' provider.
+# Installing the NVIDIA stack first satisfies it; otherwise --noconfirm would
+# auto-select the first provider (lib32-nvidia-390xx-utils) and conflict.
+# The kernel module is installed by the CachyOS installer (chwd) during setup.
+sudo pacman -S --noconfirm --needed nvidia-utils lib32-nvidia-utils
+
 section "CachyOS gaming meta-package (kernel, drivers, Steam, Wine)"
 sudo pacman -S --noconfirm --needed cachyos-gaming-meta
 
