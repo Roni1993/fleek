@@ -90,6 +90,7 @@
   <a href="#kde">3 · First boot</a>
   <a href="#bootstrap">4 · Bootstrap</a>
   <a href="#verify">5 · Verify</a>
+  <a href="#agent">6 · Start agent</a>
   <a href="#trouble">Troubleshooting</a>
 </nav>
 
@@ -213,6 +214,26 @@
     <li>Restored keys + Firefox profile from <code>/mnt/staging/backup-for-cachyos</code></li>
     <li>Resolution comment posted on ticket #7, then closed</li>
   </ul>
+</div>
+
+<h2 id="agent"><span class="step-no">6</span> Start the agent <span class="tag human">YOU</span> → <span class="tag agent">AGENT</span></h2>
+<div class="card hitl">
+  <p><strong>Goal:</strong> get the agent running on the box. The repo is <strong>already cloned</strong> to
+  <code>~/projects/fleek</code> by bootstrap — no manual <code>git clone</code> needed.</p>
+  <ol>
+    <li><strong>Add your token</strong> (one-time). In a new Konsole:
+<pre class="cmd">opencode auth login</pre>
+      …and follow the prompts to add your API provider token/key.</li>
+    <li><strong>Start the agent</strong> in the fleek repo:
+<pre class="cmd">cd ~/projects/fleek && nix run .#agent</pre>
+      (This cds into the repo and launches <code>opencode</code> — same as <code>opencode</code>.)
+      Alternatively just: <code>cd ~/projects/fleek &amp;&amp; opencode</code>.</li>
+    <li>Point it at ticket <strong>#7</strong> and the box-side handoff:
+<pre class="cmd">gh issue view 7</pre>
+      …then tell the agent to read <code>/tmp/opencode/handoff-box-session.md</code> (or say
+      "work wayfinder ticket 7, handoff at /tmp/opencode/handoff-box-session.md").</li>
+  </ol>
+  <p class="quote">After the token is in, the agent takes over from there — bootstrap, verify, SSH rotation, restore, and closing #7.</p>
 </div>
 
 <h2 id="trouble">Troubleshooting</h2>
