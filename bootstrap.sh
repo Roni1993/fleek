@@ -69,7 +69,8 @@ sudo pacman -S --noconfirm --needed hyprpolkitagent
 
 section "Verifying NVIDIA drivers"
 if command -v nvidia-smi &>/dev/null; then
-  nvidia-smi --query-gpu=name,driver_version --format=csv,noheader
+  nvidia-smi --query-gpu=name,driver_version --format=csv,noheader \
+    || warn "nvidia-smi reported an error (driver may not be loaded yet). Continue anyway."
 else
   warn "nvidia-smi not found. GPU drivers may not be loaded."
   warn "Run: sudo pacman -S nvidia-dkms && reboot"
