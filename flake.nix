@@ -124,6 +124,14 @@
         apply-work = mkEnvironmentApp "work";
         apply-private = mkEnvironmentApp "private";
         apply-gaming = mkEnvironmentApp "gaming";
+        agent = {
+          type = "app";
+          program = "${pkgs.writeShellScript "fleek-agent" ''
+            set -euo pipefail
+            cd "$HOME/projects/fleek"
+            exec opencode "$@"
+          ''}";
+        };
       };
 
       homeConfigurations = {
