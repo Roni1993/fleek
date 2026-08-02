@@ -85,6 +85,7 @@
 <nav class="nav">
   <a href="#preflight">0 · Pre-flight</a>
   <a href="#bios">1 · BIOS flash</a>
+  <a href="#biosperf">1b · BIOS perf</a>
   <a href="#calamares">2 · Install</a>
   <a href="#kde">3 · First boot</a>
   <a href="#bootstrap">4 · Bootstrap</a>
@@ -120,6 +121,46 @@
     <li>After reboot, re-enter BIOS (<kbd>Del</kbd>) and confirm version shows <strong>v2405</strong>.</li>
   </ol>
   <p class="quote">If the .CAP doesn't appear: it may need renaming — run <code>BIOSRenamer.exe</code> on the USB from Windows first, then retry. Stop and ask the agent if it still fails.</p>
+</div>
+
+<h2 id="biosperf"><span class="step-no">1b</span> BIOS performance settings <span class="tag human">YOU</span></h2>
+<div class="card hitl">
+  <p><strong>Goal:</strong> while you're in the BIOS (after the flash), set these once. They matter for this hardware:
+  RTX 3060 Ti (ReBAR), DDR4 (XMP), and later KVM/VMs (VT-x/VT-d). All are safe defaults for a gaming box.</p>
+  <ol>
+    <li><strong>XMP (RAM at rated speed)</strong> — big free performance win.
+      <ul>
+        <li><kbd>F7</kbd> Advanced → <strong>Ai Tweaker</strong> tab → <strong>Ai OverClock Tuner</strong> → <strong>XMP I</strong></li>
+        <li>Pick <strong>XMP I</strong> (XMP II only if your RAM kit's XMP II profile exists and I is unstable).</li>
+        <li>If XMP makes boot fail or crash, re-enter BIOS and set Ai OverClock Tuner back to <strong>Auto</strong>.</li>
+      </ul>
+    </li>
+    <li><strong>Re-Size BAR (Resizable BAR) + Above 4G Decoding</strong> — helps the RTX 3060 Ti.
+      <ul>
+        <li><strong>Advanced</strong> tab → <strong>PCI Subsystem Settings</strong> → <strong>Above 4G Decoding</strong> = <strong>Enabled</strong></li>
+        <li>Same page → <strong>Re-Size BAR Support</strong> = <strong>Enabled</strong></li>
+      </ul>
+    </li>
+    <li><strong>VT-x and VT-d</strong> — needed later for KVM/Podman/QEMU dev VMs.
+      <ul>
+        <li><strong>Advanced</strong> tab → <strong>CPU Configuration</strong> → <strong>Intel (VMX) Virtualization Technology</strong> = <strong>Enabled</strong></li>
+        <li><strong>Advanced</strong> tab → <strong>System Agent (SA) Configuration</strong> → <strong>VT-d</strong> = <strong>Enabled</strong></li>
+      </ul>
+    </li>
+    <li><strong>CSM (Compatibility Support Module)</strong> = <strong>Disabled</strong> — CachyOS installs UEFI; pure-UEFI boot is cleaner.
+      <ul>
+        <li><strong>Boot</strong> tab → <strong>CSM</strong> → <strong>Disabled</strong> (if present on this BIOS)</li>
+      </ul>
+    </li>
+    <li><strong>Boot order</strong> — set the <strong>USB</strong> first so the installer boots cleanly, then it'll use the NVMe after install.
+      <ul>
+        <li><strong>Boot</strong> tab → <strong>Boot Option Priorities</strong></li>
+      </ul>
+    </li>
+    <li><strong>Secure Boot</strong> — leave <strong>Disabled</strong> (CachyOS works fine without it; avoids enrollment hassle).</li>
+  </ol>
+  <p>Press <kbd>F10</kbd> → <strong>Save &amp; Exit</strong> when done. If the system won't boot after XMP, re-enter BIOS and revert Ai OverClock Tuner to Auto — everything else is safe to leave on.</p>
+  <p class="quote">Skip anything that isn't present on this BIOS version — menu names vary slightly across ASUS boards. The three that really pay off: <strong>XMP</strong>, <strong>Re-Size BAR</strong>, <strong>VT-x/VT-d</strong>.</p>
 </div>
 
 <h2 id="calamares"><span class="step-no">2</span> Install CachyOS <span class="tag human">YOU</span></h2>
