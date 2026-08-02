@@ -85,7 +85,7 @@ fi
 
 HDD_DEV=""
 for dev in /dev/sda /dev/sdb /dev/nvme1n1; do
-  size=$(lsblk -bno SIZE "$dev" 2>/dev/null || true)
+  size=$(lsblk -dbno SIZE "$dev" 2>/dev/null | head -1 || true)  # -d: skip child partitions
   if [ "$size" -ge 3900000000000 ] 2>/dev/null; then  # >= ~3.9 TB = 4 TB disk
     HDD_DEV="$dev"
     break
