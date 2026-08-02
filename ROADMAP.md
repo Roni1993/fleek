@@ -66,6 +66,8 @@
 
 ## Phase 3 — Verification
 
+- [ ] **Restore WSL keys from HDD**: Copy `D:\backup-for-cachyos\wsl-keys\keys.txt` → `~/.config/sops/age/keys.txt`, and the SSH keypair to `~/.ssh/`. Set permissions: `chmod 600 ~/.ssh/id_ed25519`. Verify with `ssh -T git@github.com`.
+- [ ] **Import Firefox profile**: Copy `D:\backup-for-cachyos\firefox-profile\` contents into `~/.mozilla/firefox/<hm-profile>/`. The HM-managed Firefox profile directory is at: `ls ~/.mozilla/firefox/`. Replace placeholder profile contents, or update `profiles.ini` to point at a subdirectory with the backed-up data. Key files: `places.sqlite` (bookmarks), `logins.json` + `key4.db` (saved passwords), `extensions/` (addons).
 - [ ] Reboot, select **Hyprland** in SDDM, login
 - [ ] Verify WM starts, waybar renders
 - [ ] Verify: swaync (notifications), rofi (Super+Space), hyprlock (Super+L)
