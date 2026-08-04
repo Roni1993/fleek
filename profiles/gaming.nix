@@ -12,28 +12,26 @@
   # ─────────────────────────────────────────────────────────────────
 
   # ── User-level packages (not provided by CachyOS base) ──
+  # GPU-adjacent apps are system-provided (pacman): nix builds crash on
+  # NVIDIA EGL/GBM (nix kitty, nix hyprland) or inject into system
+  # processes (mangohud). Only non-GPU CLI/TUI tools stay in nix.
   fonts.fontconfig.enable = true;
   home.packages = with pkgs; [
-    # Gaming tools
+    # Gaming tools (system: discord, mangohud)
     protonup-qt
     goverlay
     nvtopPackages.full
     gwe
-    discord
 
-    # Hyprland ecosystem (not HM-moduleable)
-    awww
+    # Hyprland ecosystem (system: hyprland/hyprlock/hyprshot/hyprpicker/awww).
+    # nwg-displays is a plain GTK client — safe.
     nwg-displays
-    hyprshot                # grim + slurp wrapper
 
     # Audio
     pavucontrol
 
     # Clipboard
     wl-clipboard
-
-    # Terminal (ghostty as secondary, kitty handled via programs.*)
-    ghostty
 
     # Fonts
     (nerd-fonts.jetbrains-mono)
@@ -67,179 +65,154 @@
   };
 
   # ── Hyprland WM ──
-  wayland.windowManager.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-    systemd.enable = true;
-    configType = "hyprlang";
+  # The COMPOSITOR is system-provided (pacman `hyprland`). The nix/HM
+  # hyprland build aborts on this machine: its bundled mesa looks for
+  # /run/opengl-driver/lib/gbm/dri_gbm.so (a NixOS path) which doesn't
+  # exist on CachyOS, so the DRM backend fails -> black screen. The
+  # system build links against system mesa + NVIDIA stack (same as KDE).
+  # Config is managed here via home.file instead of the HM module.
+  home.file.".config/hypr/hyprland.conf" = {
+    text = ''
+      $mod=SUPER
+      exec-once=/usr/bin/dbus-update-activation-environment --systemd DISPLAY HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
 
-    settings = {
-      "$mod" = "SUPER";
+      env=XCURSOR_SIZE,24
+      env=XDG_CURRENT_DESKTOP,Hyprland
+      env=XDG_SESSION_TYPE,wayland
+      env=XDG_SESSION_DESKTOP,Hyprland
+      env=QT_QPA_PLATFORM,wayland;xcb
+      env=QT_WAYLAND_DISABLE_WINDOWDECORATION,1
+      env=SDL_VIDEODRIVER,wayland
+      env=MOZ_ENABLE_WAYLAND,1
+      env=GDK_BACKEND,wayland,x11
 
-      monitor = [
-        ",preferred,auto,1"
-      ];
+      exec-once=waybar
+      exec-once=awww-daemon
+      exec-once=swaync
+      exec-once=hypridle
+      exec-once=/usr/lib/hyprpolkitagent/hyprpolkitagent
+      exec-once=systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+      exec-once=dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 
-      input = {
-        kb_layout = "us";
-        follow_mouse = 1;
-        touchpad.natural_scroll = true;
-      };
+      monitor=,preferred,auto,1
 
-      general = {
-        gaps_in = 5;
-        gaps_out = 10;
-        border_size = 2;
-        "col.active_border" = "rgb(cba6f7) rgb(f5c2e7) 45deg";
-        "col.inactive_border" = "rgb(45475a)";
-        layout = "dwindle";
-      };
+      input {
+        kb_layout=us
+        follow_mouse=1
+        touchpad {
+          natural_scroll=true
+        }
+      }
 
-      decoration = {
-        rounding = 10;
-        blur = {
-          enabled = true;
-          size = 3;
-          passes = 1;
-          new_optimizations = true;
-        };
-        shadow = {
-          enabled = true;
-          range = 4;
-          render_power = 3;
-          color = "rgba(1a1a1aee)";
-        };
-      };
+      general {
+        gaps_in=5
+        gaps_out=10
+        border_size=2
+        col.active_border=rgb(cba6f7) rgb(f5c2e7) 45deg
+        col.inactive_border=rgb(45475a)
+        layout=dwindle
+      }
 
-      animations = {
-        enabled = true;
-        bezier = [
-          "myBezier, 0.05, 0.9, 0.1, 1.05"
-          "linear, 0, 0, 1, 1"
-        ];
-        animation = [
-          "windows, 1, 7, myBezier"
-          "windowsOut, 1, 7, default, popin 80%"
-          "border, 1, 10, default"
-          "fade, 1, 7, default"
-          "workspaces, 1, 6, default"
-        ];
-      };
+      decoration {
+        rounding=10
+        blur {
+          enabled=true
+          size=3
+          passes=1
+          new_optimizations=true
+        }
+        shadow {
+          enabled=true
+          range=4
+          render_power=3
+          color=rgba(1a1a1aee)
+        }
+      }
 
-      misc = {
-        disable_hyprland_logo = true;
-        disable_splash_rendering = true;
-        vrr = 1;
-      };
+      animations {
+        enabled=true
+        bezier=myBezier, 0.05, 0.9, 0.1, 1.05
+        bezier=linear, 0, 0, 1, 1
+        animation=windows, 1, 7, myBezier
+        animation=windowsOut, 1, 7, default, popin 80%
+        animation=border, 1, 10, default
+        animation=fade, 1, 7, default
+        animation=workspaces, 1, 6, default
+      }
 
-      render.direct_scanout = true;
+      misc {
+        disable_hyprland_logo=true
+        disable_splash_rendering=true
+      }
 
-      dwindle = {
-        pseudotile = true;
-        preserve_split = true;
-      };
+      render {
+        direct_scanout=true
+      }
 
-      master.new_is_master = true;
+      dwindle {
+        preserve_split=true
+      }
 
-      gestures.workspace_swipe = true;
+      master {
+        new_on_top=true
+      }
 
-      bind = [
-        "$mod, RETURN, exec, kitty"
-        "$mod, Q, killactive"
-        "$mod, M, exit"
-        "$mod, E, exec, dolphin"
-        "$mod, F, fullscreen"
-        "$mod, V, togglefloating"
-        "$mod, R, exec, rofi -show drun"
-        "$mod, P, pseudo"
-        "$mod, S, togglesplit"
-        "$mod, SPACE, exec, rofi -show drun"
-        "$mod, L, exec, hyprlock"
-        "$mod, T, exec, ~/.local/bin/theme-toggle"
+      bind=$mod, RETURN, exec, kitty
+      bind=$mod, Q, killactive
+      bind=$mod, M, exit
+      bind=$mod, E, exec, dolphin
+      bind=$mod, F, fullscreen
+      bind=$mod, V, togglefloating
+      bind=$mod, R, exec, rofi -show drun
+      bind=$mod, P, pseudo
+      bind=$mod, SPACE, exec, rofi -show drun
+      bind=$mod, L, exec, hyprlock
+      bind=$mod, T, exec, ~/.local/bin/theme-toggle
 
-        # Screenshots
-        ", PRINT, exec, hyprshot -m region"
-        "$mod SHIFT, S, exec, hyprshot -m region"
-        "$mod, PRINT, exec, hyprshot -m output"
+      bind=, PRINT, exec, hyprshot -m region
+      bind=$mod SHIFT, S, exec, hyprshot -m region
+      bind=$mod, PRINT, exec, hyprshot -m output
 
-        # Workspace navigation
-        "$mod, 1, workspace, 1"
-        "$mod, 2, workspace, 2"
-        "$mod, 3, workspace, 3"
-        "$mod, 4, workspace, 4"
-        "$mod, 5, workspace, 5"
-        "$mod, 6, workspace, 6"
-        "$mod, 7, workspace, 7"
-        "$mod, 8, workspace, 8"
-        "$mod, 9, workspace, 9"
-        "$mod, 0, workspace, 10"
+      bind=$mod, 1, workspace, 1
+      bind=$mod, 2, workspace, 2
+      bind=$mod, 3, workspace, 3
+      bind=$mod, 4, workspace, 4
+      bind=$mod, 5, workspace, 5
+      bind=$mod, 6, workspace, 6
+      bind=$mod, 7, workspace, 7
+      bind=$mod, 8, workspace, 8
+      bind=$mod, 9, workspace, 9
+      bind=$mod, 0, workspace, 10
 
-        # Move window to workspace
-        "$mod SHIFT, 1, movetoworkspacesilent, 1"
-        "$mod SHIFT, 2, movetoworkspacesilent, 2"
-        "$mod SHIFT, 3, movetoworkspacesilent, 3"
-        "$mod SHIFT, 4, movetoworkspacesilent, 4"
-        "$mod SHIFT, 5, movetoworkspacesilent, 5"
-        "$mod SHIFT, 6, movetoworkspacesilent, 6"
-        "$mod SHIFT, 7, movetoworkspacesilent, 7"
-        "$mod SHIFT, 8, movetoworkspacesilent, 8"
-        "$mod SHIFT, 9, movetoworkspacesilent, 9"
-        "$mod SHIFT, 0, movetoworkspacesilent, 10"
+      bind=$mod SHIFT, 1, movetoworkspacesilent, 1
+      bind=$mod SHIFT, 2, movetoworkspacesilent, 2
+      bind=$mod SHIFT, 3, movetoworkspacesilent, 3
+      bind=$mod SHIFT, 4, movetoworkspacesilent, 4
+      bind=$mod SHIFT, 5, movetoworkspacesilent, 5
+      bind=$mod SHIFT, 6, movetoworkspacesilent, 6
+      bind=$mod SHIFT, 7, movetoworkspacesilent, 7
+      bind=$mod SHIFT, 8, movetoworkspacesilent, 8
+      bind=$mod SHIFT, 9, movetoworkspacesilent, 9
+      bind=$mod SHIFT, 0, movetoworkspacesilent, 10
 
-        # Scroll workspaces
-        "$mod, mouse_down, workspace, e+1"
-        "$mod, mouse_up, workspace, e-1"
-      ];
+      bind=$mod, mouse_down, workspace, e+1
+      bind=$mod, mouse_up, workspace, e-1
 
-      bindm = [
-        "$mod, mouse:272, movewindow"
-        "$mod, mouse:273, resizewindow"
-      ];
+      binde=, XF86AudioRaiseVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ +5%
+      binde=, XF86AudioLowerVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ -5%
+      binde=, XF86AudioMute, exec, pactl set-sink-mute @DEFAULT_SINK@ toggle
 
-      bindl = [
-        # Media keys
-        ", XF86AudioPlay, exec, playerctl play-pause"
-        ", XF86AudioNext, exec, playerctl next"
-        ", XF86AudioPrev, exec, playerctl previous"
-      ];
+      bindl=, XF86AudioPlay, exec, playerctl play-pause
+      bindl=, XF86AudioNext, exec, playerctl next
+      bindl=, XF86AudioPrev, exec, playerctl previous
 
-      binde = [
-        # Volume control
-        ", XF86AudioRaiseVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ +5%"
-        ", XF86AudioLowerVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ -5%"
-        ", XF86AudioMute, exec, pactl set-sink-mute @DEFAULT_SINK@ toggle"
-      ];
+      bindm=$mod, mouse:272, movewindow
+      bindm=$mod, mouse:273, resizewindow
 
-      exec-once = [
-        "waybar"
-        "awww-daemon"
-        "swaync"
-        "hypridle"
-        "/usr/lib/hyprpolkitagent/hyprpolkitagent"
-        "systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-        "dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-      ];
-
-      env = [
-        "XCURSOR_SIZE,24"
-        "XDG_CURRENT_DESKTOP,Hyprland"
-        "XDG_SESSION_TYPE,wayland"
-        "XDG_SESSION_DESKTOP,Hyprland"
-        "QT_QPA_PLATFORM,wayland;xcb"
-        "QT_WAYLAND_DISABLE_WINDOWDECORATION,1"
-        "SDL_VIDEODRIVER,wayland"
-        "MOZ_ENABLE_WAYLAND,1"
-        "GDK_BACKEND,wayland,x11"
-        "NIXOS_OZONE_WL,1"
-      ];
-
-      # Per-game window rules
-      windowrulev2 = [
-        "fullscreen, class:^(.*.exe)$"
-        "noblur, class:^(.*.exe)$"
-        "nomaximizerequest, class:^(.*.exe)$"
-      ];
-    };
+      # 0.56 windowrule syntax: `<rule> <match>` (space-separated, no comma).
+      # fullscreen works; noblur/nomaximizerequest were removed in 0.56.
+      windowrule=fullscreen class:^(.*.exe)$
+    '';
   };
 
   # ── Bar ──
@@ -321,73 +294,67 @@
   };
 
   # ── Lockscreen ──
-  programs.hyprlock = {
-    enable = true;
-    settings = {
-      general = {
-        disable_loading_bar = true;
-        hide_cursor = true;
-      };
-      background = [
-        {
-          path = "screenshot";
-          blur_passes = 3;
-          blur_size = 8;
-        }
-      ];
-      input-field = [
-        {
-          size = "200, 50";
-          position = "0, -80";
-          monitor = "";
-          dots_center = true;
-          fade_on_empty = false;
-          font_color = "rgb(cba6f7)";
-          inner_color = "rgb(30, 30, 46)";
-          outer_color = "rgb(69, 71, 90)";
-          outline_thickness = 2;
-          placeholder_text = "Password...";
-        }
-      ];
-      label = [
-        {
-          monitor = "";
-          text = "cmd[update:1000] echo $(date +\"%H:%M\")";
-          color = "rgba(205, 214, 244, 1)";
-          font_size = 90;
-          font_family = "JetBrains Mono Nerd Font";
-          position = "0, 40";
-          halign = "center";
-          valign = "center";
-        }
-      ];
-    };
+  # hyprlock is system-provided (pacman); config managed here so the
+  # nix build (NVIDIA EGL/GBM) isn't pulled in by home-manager.
+  home.file.".config/hypr/hyprlock.conf" = {
+    text = ''
+      general {
+          disable_loading_bar = true
+          hide_cursor = true
+      }
+      background {
+          path = screenshot
+          blur_passes = 3
+          blur_size = 8
+      }
+      input-field {
+          size = 200, 50
+          position = 0, -80
+          monitor =
+          dots_center = true
+          fade_on_empty = false
+          font_color = rgb(cba6f7)
+          inner_color = rgb(30, 30, 46)
+          outer_color = rgb(69, 71, 90)
+          outline_thickness = 2
+          placeholder_text = Password...
+      }
+      label {
+          monitor =
+          text = cmd[update:1000] echo $(date +"%H:%M")
+          color = rgba(205, 214, 244, 1)
+          font_size = 90
+          font_family = JetBrains Mono Nerd Font
+          position = 0, 40
+          halign = center
+          valign = center
+      }
+    '';
   };
 
   # ── Idle management ──
-  services.hypridle = {
-    enable = true;
-    settings = {
-      general = {
-        after_sleep_cmd = "hyprctl dispatch dpms on";
-        ignore_dbus_inhibit = false;
-      };
-      listener = [
-        {
-          timeout = 300;
-          on-timeout = "hyprctl dispatch dpms off";
-          on-resume = "hyprctl dispatch dpms on";
-        }
-        {
-          timeout = 600;
-          on-timeout = "hyprlock";
-        }
-        {
-          timeout = 900;
-          on-timeout = "systemctl suspend";
-        }
-      ];
-    };
+  # hypridle is system-provided (pacman) and started via hyprland's
+  # exec-once. Config lives at ~/.config/hypr/hypridle.conf.
+  home.file.".config/hypr/hypridle.conf" = {
+    text = ''
+      general {
+          after_sleep_cmd = hyprctl dispatch dpms on
+          ignore_dbus_inhibit = false
+      }
+      listener {
+          timeout = 300
+          on-timeout = hyprctl dispatch dpms off
+          on-resume = hyprctl dispatch dpms on
+      }
+      listener {
+          timeout = 600
+          on-timeout = hyprlock
+      }
+      listener {
+          timeout = 900
+          on-timeout = systemctl suspend
+      }
+    '';
   };
 
   # ── Clipboard ──
@@ -451,21 +418,24 @@
     '';
   };
 
-  programs.mangohud = {
-    enable = true;
-    settings = {
-      fps = true;
-      frame_timing = true;
-      gpu_stats = true;
-      cpu_stats = true;
-      ram = true;
-      vram = true;
-      gpu_temp = true;
-      cpu_temp = true;
-      engine_version = true;
-      gamemode = true;
-      config_version = 3;
-    };
+  # ── MangoHud overlay ──
+  # mangohud is system-provided (pacman) — the nix build injects into
+  # system Steam/game processes with its own libs (mismatch risk).
+  # Config is managed via home.file.
+  home.file.".config/mangohud/MangoHud.conf" = {
+    text = ''
+      fps=1
+      frame_timing=1
+      gpu_stats=1
+      cpu_stats=1
+      ram=1
+      vram=1
+      gpu_temp=1
+      cpu_temp=1
+      engine_version=1
+      gamemode=1
+      config_version=3
+    '';
   };
 
   # ── Stylix theming ──
