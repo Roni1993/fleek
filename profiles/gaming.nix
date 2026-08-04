@@ -26,6 +26,9 @@
     # Hyprland ecosystem (system: hyprland/hyprlock/hyprshot/hyprpicker/awww).
     # nwg-displays is a plain GTK client — safe.
     nwg-displays
+    # Vicinae launcher — pure Qt wayland client (safe); app search, clipboard,
+    # file search, window switching.
+    vicinae
 
     # Audio
     pavucontrol
@@ -90,6 +93,7 @@
       exec-once=awww-daemon
       exec-once=swaync
       exec-once=hypridle
+      exec-once=vicinae server
       # graphical-session.target never activates under system Hyprland
       # (RefuseManualStart), so start HM's graphical-session services directly.
       exec-once=systemctl --user start cliphist.service
@@ -166,9 +170,9 @@
       bind=$mod, E, exec, dolphin
       bind=$mod, F, fullscreen
       bind=$mod, V, togglefloating
-      bind=$mod, R, exec, fuzzel
+      bind=$mod, R, exec, vicinae toggle
       bind=$mod, P, pseudo
-      bind=$mod, SPACE, exec, fuzzel
+      bind=$mod, SPACE, exec, vicinae toggle
       bind=$mod, L, exec, hyprlock
       bind=$mod, T, exec, ~/.local/bin/theme-toggle
 
