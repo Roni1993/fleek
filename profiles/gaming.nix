@@ -496,30 +496,30 @@
   # };
 
   # ── Theme toggle script (light ↔ dark) ──
-  # Placeholder: a keybind ($mod+T) runs ~/.local/bin/theme-toggle.
-  # Write the script in Phase 3 to swap:
-  #   - GTK theme (gsettings)
-  #   - Qt theme (qt6ct config)
-  #   - kitty colors (kitty @ set-colors)
-  #   - Hyprland borders (hyprctl keyword)
-  #   - waybar CSS (reload)
-  #   - Stylix wallpaper polarity
+  # Super+T: re-generate the matugen palette in the opposite mode and
+  # reload Hyprland. GTK/Qt/kitty/waybar follow in a later pass.
   home.file.".local/bin/theme-toggle" = {
     executable = true;
     text = ''
       #!/usr/bin/env bash
-      echo "theme-toggle: not yet implemented — see gaming.nix"
+      state="$HOME/.cache/theme-mode"
+      mode=$(cat "$state" 2>/dev/null || echo dark)
+      [ "$mode" = dark ] && new=light || new=dark
+      echo "$new" > "$state"
+      wallpaper="''${1:-$HOME/projects/fleek/profiles/wallpaper.jpg}"
+      matugen image "$wallpaper" -m "$new" && hyprctl reload
     '';
   };
 
-  # ── Wallpaper (awww placeholder) ──
+  # ── Wallpaper + theme apply ──
   home.file.".local/bin/set-wallpaper" = {
     executable = true;
     text = ''
       #!/usr/bin/env bash
-      wallpaper="''${1:-$HOME/projects/fleek/profiles/wallpaper.png}"
+      wallpaper="''${1:-$HOME/projects/fleek/profiles/wallpaper.jpg}"
       if [ -f "$wallpaper" ]; then
         awww img "$wallpaper" --transition-type wipe --transition-fps 60
+        matugen image "$wallpaper" && hyprctl reload
       fi
     '';
   };
