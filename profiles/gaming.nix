@@ -518,9 +518,9 @@
       wallpaper="''${1:-$HOME/projects/fleek/profiles/wallpaper.jpg}"
       matugen image "$wallpaper" -m "$new" && {
         hyprctl reload
-        # waybar/swaync run as .*-wrapped (HM wrapper names); restart via hyprland
-        pkill -x .waybar-wrapped 2>/dev/null; hyprctl dispatch exec waybar
-        pkill -x .swaync-wrapped 2>/dev/null; hyprctl dispatch exec swaync
+        # reload in place so active notifications survive
+        pkill -USR2 -x .waybar-wrapped 2>/dev/null
+        swaync-client -R 2>/dev/null
         kitty @ reload-config 2>/dev/null
       }
     '';
@@ -536,8 +536,8 @@
         awww img "$wallpaper" --transition-type wipe --transition-fps 60
         matugen image "$wallpaper" && {
           hyprctl reload
-          pkill -x .waybar-wrapped 2>/dev/null; hyprctl dispatch exec waybar
-          pkill -x .swaync-wrapped 2>/dev/null; hyprctl dispatch exec swaync
+          pkill -USR2 -x .waybar-wrapped 2>/dev/null
+          swaync-client -R 2>/dev/null
           kitty @ reload-config 2>/dev/null
         }
       fi
