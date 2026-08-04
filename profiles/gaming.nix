@@ -520,7 +520,7 @@
         hyprctl reload
         # reload in place so active notifications survive
         pkill -USR2 -x .waybar-wrapped 2>/dev/null
-        swaync-client -R 2>/dev/null
+        swaync-client -rs 2>/dev/null
         kitty @ reload-config 2>/dev/null
       }
     '';
@@ -537,7 +537,7 @@
         matugen image "$wallpaper" && {
           hyprctl reload
           pkill -USR2 -x .waybar-wrapped 2>/dev/null
-          swaync-client -R 2>/dev/null
+          swaync-client -rs 2>/dev/null
           kitty @ reload-config 2>/dev/null
         }
       fi
