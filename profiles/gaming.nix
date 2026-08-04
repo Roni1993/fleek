@@ -404,11 +404,13 @@
       enable_audio_bell no
       tab_bar_edge top
       tab_bar_style powerline
-      # allow runtime theme reload (`kitty @ reload-config` after matugen)
+      # reload config when it changes; allow runtime theme reload
+      auto_reload_config on
       allow_remote_control yes
       listen_on unix:/tmp/kitty
       # matugen-generated palette (wallpaper-driven); regenerate with
-      # `matugen image <wall>` / Super+T. Running kitty needs a reload.
+      # `matugen image <wall>` / Super+T. Running kitty needs a reload
+      # (ctrl+shift+F5, or `kitty @ load-config` once a socket exists).
       include ~/.config/kitty/kitty-colors.conf
     '';
   };
@@ -521,7 +523,7 @@
         # reload in place so active notifications survive
         pkill -USR2 -x .waybar-wrapped 2>/dev/null
         swaync-client -rs 2>/dev/null
-        kitty @ reload-config 2>/dev/null
+        kitty @ --to unix:/tmp/kitty load-config 2>/dev/null
       }
     '';
   };
@@ -538,7 +540,7 @@
           hyprctl reload
           pkill -USR2 -x .waybar-wrapped 2>/dev/null
           swaync-client -rs 2>/dev/null
-          kitty @ reload-config 2>/dev/null
+          kitty @ --to unix:/tmp/kitty load-config 2>/dev/null
         }
       fi
     '';
