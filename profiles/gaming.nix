@@ -251,6 +251,11 @@
       [templates.swaync]
       input_path = "~/.config/matugen/templates/swaync-style.css"
       output_path = "~/.config/swaync/style.css"
+
+      [templates.vicinae]
+      input_path = "~/.config/matugen/templates/vicinae.toml"
+      output_path = "~/.local/share/vicinae/themes/matugen.toml"
+      post_hook = "vicinae theme set matugen"
     '';
   };
   home.file.".config/matugen/templates/hyprland-colors.conf" = {
@@ -264,6 +269,9 @@
   };
   home.file.".config/matugen/templates/swaync-style.css" = {
     source = ./matugen/swaync-style.css.tmpl;
+  };
+  home.file.".config/matugen/templates/vicinae.toml" = {
+    source = ./matugen/vicinae.toml;
   };
 
   # ── Bar ──
@@ -518,6 +526,13 @@
       [ "$mode" = dark ] && new=light || new=dark
       echo "$new" > "$state"
       wallpaper="''${1:-$HOME/projects/fleek/profiles/wallpaper.jpg}"
+      # drive system color-scheme (GTK/Qt follow it); vicinae theme is applied
+      # automatically by matugen's post_hook (theme set matugen)
+      if [ "$new" = light ]; then
+        gsettings set org.gnome.desktop.interface color-scheme prefer-light
+      else
+        gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+      fi
       matugen image "$wallpaper" -m "$new" && {
         hyprctl reload
         # reload in place so active notifications survive
