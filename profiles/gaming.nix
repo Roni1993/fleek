@@ -299,14 +299,14 @@
       icons-enabled=yes
 
       [colors]
-      background=1e1e2eee
-      text=cdd6f4ff
-      prompt=f5c2e7ff
-      match=cba6f7ff
-      selection=313244ff
-      selection-text=cdd6f4ff
-      selection-match=cba6f7ff
-      border=cba6f7ff
+      background=1a1b26ee
+      text=c0caf5ff
+      prompt=7aa2f7ff
+      match=7dcfffff
+      selection=33467cff
+      selection-text=c0caf5ff
+      selection-match=7dcfffff
+      border=7aa2f7ff
     '';
   };
 
