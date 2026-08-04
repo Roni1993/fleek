@@ -25,6 +25,107 @@ section() { echo -e "\n${GREEN}>>>${NC} $*"; }
 warn()   { echo -e "${YELLOW}!!!${NC} $*"; }
 die()    { echo -e "${RED}ERR:${NC} $*" >&2; exit 1; }
 
+# ── Logging ─────────────────────────────────────────────────────
+# Every run is captured verbatim to a timestamped transcript under
+# ~/.local/state/fleek/bootstrap/ (persists across reboots — /tmp is
+# wiped). `latest` symlinks the most recent transcript so follow-ups
+# are one command away: cat ~/.local/state/fleek/bootstrap/latest
+
+LOG_DIR="$HOME/.local/state/fleek/bootstrap"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/bootstrap-$(date +%Y%m%d-%H%M%S).log"
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+echo "Run started: $(date '+%Y-%m-%d %H:%M:%S %Z')"
+echo "Logging to: $LOG_FILE"
+
+log_fail() {
+  echo -e "${RED}LOGGED ERROR${NC} at line ${BASH_LINENO[0]}: ${BASH_COMMAND}" >&2
+}
+
+log_end() {
+  echo ""
+  echo "Bootstrap exited. Full transcript: $LOG_FILE"
+  echo "   Follow up: cat $LOG_DIR/latest"
+}
+
+set -o errtrace
+trap 'log_fail' ERR
+trap 'log_end' EXIT
+
+# ── Phase-3 restore (shared) ─────────────────────────────────────
+# Restores the pre-wipe backup (SSH keys, sops age key, Firefox
+# profile) from /mnt/staging/backup-for-cachyos. Idempotent — safe to
+# re-run; already-restored items are skipped. Per wayfinder #8, the
+# Firefox import is a curated copy into the HM-managed profile dir.
+
+phase3_restore() {
+  if ! mountpoint -q /mnt/staging 2>/dev/null; then
+    warn "Staging not mounted — skipping Phase-3 restore. Check section 5."
+    return 0
+  fi
+
+  B="/mnt/staging/backup-for-cachyos"
+
+  if [ ! -f "$HOME/.ssh/id_ed25519" ] && [ -f "$B/wsl-keys/id_ed25519" ]; then
+    mkdir -p "$HOME/.ssh"
+    cp "$B/wsl-keys/id_ed25519" "$HOME/.ssh/id_ed25519"
+    cp "$B/wsl-keys/id_ed25519.pub" "$HOME/.ssh/id_ed25519.pub"
+    chmod 600 "$HOME/.ssh/id_ed25519"
+    chmod 644 "$HOME/.ssh/id_ed25519.pub"
+    echo "  SSH keypair restored to ~/.ssh"
+  else
+    echo "  SSH keypair already present, skipping."
+  fi
+
+  if [ ! -f "$HOME/.config/sops/age/keys.txt" ] && [ -f "$B/wsl-keys/keys.txt" ]; then
+    mkdir -p "$HOME/.config/sops/age"
+    cp "$B/wsl-keys/keys.txt" "$HOME/.config/sops/age/keys.txt"
+    chmod 600 "$HOME/.config/sops/age/keys.txt"
+    echo "  sops age key restored."
+  else
+    echo "  sops age key already present, skipping."
+  fi
+
+  FF_SRC="$B/firefox-profile"
+  FF_DST="$HOME/.mozilla/firefox/roni"
+  if [ -d "$FF_SRC" ] && [ -d "$FF_DST" ]; then
+    if pgrep -x firefox &>/dev/null; then
+      warn "Firefox is running — close it and re-run to import the profile."
+    else
+      echo "  Importing Firefox profile -> $FF_DST"
+      BK_DIR="$HOME/.hm-restore-backup-$(date +%Y%m%d-%H%M%S)"
+      mkdir -p "$BK_DIR"
+      # Curated list per wayfinder #8. logins.json+key4.db travel as a pair.
+      # user.js/.keep/containers.json stay HM-managed and are NOT copied.
+      for f in places.sqlite favicons.sqlite logins.json key4.db \
+               permissions.sqlite cert9.db formhistory.sqlite cookies.sqlite \
+               prefs.js search.json.mozlz4 handlers.json \
+               extensions extensions.json browser-extension-data \
+               storage storage-sync-v2.sqlite; do
+        if [ -e "$FF_SRC/$f" ]; then
+          [ -e "$FF_DST/$f" ] && cp -a "$FF_DST/$f" "$BK_DIR/"
+          cp -a "$FF_SRC/$f" "$FF_DST/"
+          echo "    restored: $f"
+        fi
+      done
+      chmod -R u+rwX "$FF_DST"
+      echo "  Firefox profile imported (pre-import state backed up to $BK_DIR)."
+      echo "  If a fresh default profile appears on first launch, fix via"
+      echo "  about:profiles -> Set as default (see issue #8)."
+    fi
+  else
+    warn "Firefox source or target missing — skipping import (src: $FF_SRC, dst: $FF_DST)."
+  fi
+}
+
+# `bootstrap.sh --restore` runs ONLY the Phase-3 restore (idempotent).
+if [ "${1:-}" = "--restore" ]; then
+  section "Phase-3 restore only (--restore)"
+  phase3_restore
+  exit 0
+fi
+
 # ── Preflight ────────────────────────────────────────────────────
 
 [ "$USER" = "roni" ] || warn "Expected user 'roni', got '$USER'."
@@ -67,6 +168,9 @@ sudo pacman -Syu --noconfirm
 
 section "Base development tools"
 sudo pacman -S --noconfirm --needed base-devel git curl wget
+# kitty is the primary terminal (gaming.nix manages config via home.file,
+# the binary is system-provided to avoid the nix libglvnd/NVIDIA EGL crash).
+sudo pacman -S --noconfirm --needed kitty
 
 if ! command -v paru &>/dev/null; then
   section "Installing paru (AUR helper)"
@@ -92,6 +196,29 @@ sudo pacman -S --noconfirm --needed gamescope-session-cachyos
 
 section "hyprpolkitagent (privilege escalation for Hyprland)"
 sudo pacman -S --noconfirm --needed hyprpolkitagent
+
+section "Hyprland stack (system builds — nix builds crash on NVIDIA EGL/GBM)"
+# The nix/hyprland build aborts on this box (bundled mesa can't find
+# /run/opengl-driver/lib/gbm/dri_gbm.so on CachyOS -> DRM backend fails,
+# black screen). System builds link against system mesa + NVIDIA stack.
+sudo pacman -S --noconfirm --needed hyprland hyprlock hypridle hyprshot hyprpicker awww
+
+section "GUI apps with own GL renderers (system builds)"
+# nix ghostty/discord/mangohud share kitty's failure mode (bundled GL/EGL
+# can't talk to NVIDIA, or inject into system processes with nix libs).
+sudo pacman -S --noconfirm --needed ghostty discord mangohud
+
+section "NixOS-compat GL shim (/run/opengl-driver)"
+# nix-built apps expect the NixOS GL layout /run/opengl-driver -> store.
+# On CachyOS (standalone nix) point it at the system GL so nix GL *clients*
+# (waybar, swaync, rofi, firefox, ...) resolve the NVIDIA stack. Persisted
+# via tmpfiles.d because /run is tmpfs. NOTE: this does NOT fix nix GPU
+# BACKEND apps (hyprland etc.) — those abort on Hypr* ABI guards and must
+# stay system packages.
+printf 'L! /run/opengl-driver/lib - - - - /usr/lib\nL! /run/opengl-driver/share - - - - /usr/share\n' \
+  | sudo tee /etc/tmpfiles.d/opengl-driver.conf >/dev/null
+sudo systemd-tmpfiles --create /etc/tmpfiles.d/opengl-driver.conf
+echo "  /run/opengl-driver -> system GL (persisted)"
 
 # ── 3b. Remove noctalia (notification daemon) ────────────────────
 # noctalia ships with CachyOS KDE and claims org.freedesktop.Notifications
@@ -147,14 +274,21 @@ if [ -z "$HDD_DEV" ]; then
 fi
 
 if [ -n "$HDD_DEV" ] && ! mount | grep -q "/mnt/staging"; then
-  HDD_PART="${HDD_DEV}1"
-  if [ ! -b "$HDD_PART" ]; then
-    warn "No partition found on $HDD_DEV — expected NTFS part1. Skipping staging mount."
+  # Find the NTFS *data* partition on the disk. Hardcoding "${HDD_DEV}1" was
+  # wrong — many 4TB disks (incl. ST4000LM024) have a 16M reserved part1 and
+  # the NTFS volume on part2, so the old code mounted/blanked the wrong device.
+  HDD_PART=$(lsblk -rno NAME,FSTYPE "$HDD_DEV" 2>/dev/null \
+    | awk '$2=="ntfs" {print "/dev/"$1; exit}')
+  if [ -z "$HDD_PART" ] || [ ! -b "$HDD_PART" ]; then
+    warn "No NTFS partition found on $HDD_DEV — expected an NTFS data partition."
+    warn "Disk layout:"; lsblk -o NAME,SIZE,TYPE,FSTYPE "$HDD_DEV"
     warn "You may need to mount it manually for the Phase-3 restore."
   else
     section "Mounting $HDD_PART read-only at /mnt/staging"
     HDD_UUID=$(sudo blkid -s UUID -o value "$HDD_PART")
     sudo mkdir -p /mnt/staging
+    # ntfs-3g userspace driver for read-only staging mounts.
+    sudo pacman -S --noconfirm --needed ntfs-3g
     if ! grep -q "$HDD_UUID" /etc/fstab; then
       echo "UUID=$HDD_UUID  /mnt/staging  ntfs  ro,noatime,nofail  0 0" | sudo tee -a /etc/fstab
     fi
@@ -264,6 +398,39 @@ fi
 section "Applying gaming profile"
 nix run "$REPO_DIR#apply-gaming"
 
+# ── 8a. Register Hyprland login session + autologin ──────────────
+# Hyprland is now a SYSTEM package (see section 3) whose hyprland.desktop
+# is installed to /usr/share/wayland-sessions directly — nothing to
+# register. This block only warns if it's unexpectedly missing, then
+# points autologin at Hyprland for whichever login manager is installed.
+
+section "Registering Hyprland login session + autologin"
+for sess in hyprland hyprland-uwsm; do
+  if [ -f "/usr/share/wayland-sessions/$sess.desktop" ]; then
+    echo "  Present: /usr/share/wayland-sessions/$sess.desktop"
+  else
+    warn "Missing session file (system package should provide it): $sess"
+  fi
+done
+
+if [ -f /etc/plasmalogin.conf ]; then
+  # plasmalogin (Plasma >=6.4) reads ONLY /etc/plasmalogin.conf — conf.d
+  # drop-ins are ignored, so write the autologin session to the main file.
+  printf '[Autologin]\nUser=%s\nSession=hyprland\n' "$USER" \
+    | sudo tee /etc/plasmalogin.conf >/dev/null
+  # CachyOS ships a user service that rewrites a gamescope autologin drop-in
+  # (via pkexec) on every login; disable it so it can't fight this setting.
+  systemctl --user disable cachyos-gamescope-autologin.service 2>/dev/null || true
+  echo "  plasmalogin autologin -> Hyprland ($USER)"
+elif [ -f /etc/sddm.conf ]; then
+  sudo mkdir -p /etc/sddm.conf.d
+  printf '[Autologin]\nUser=%s\nSession=hyprland.desktop\n' "$USER" \
+    | sudo tee /etc/sddm.conf.d/10-hyprland-autologin.conf >/dev/null
+  echo "  SDDM autologin -> Hyprland ($USER)"
+else
+  warn "No plasmalogin or SDDM config found — set Hyprland autologin manually."
+fi
+
 # ── 8b. Project checkouts ──────────────────────────────────────
 # Clone every local project into ~/projects, mirroring the old WSL layout.
 # Format: "url|dir|branch". Skip if the dir already exists (idempotent).
@@ -344,11 +511,18 @@ else
   echo "NOT FOUND"; errors=$((errors + 1))
 fi
 
-echo -n "  SDDM autologin... "
-if grep -q "Session=hyprland" /etc/sddm.conf 2>/dev/null; then
+echo -n "  Hyprland login session... "
+if [ -f /usr/share/wayland-sessions/hyprland.desktop ]; then
   echo "OK"
 else
-  echo "$(grep 'Session=' /etc/sddm.conf 2>/dev/null || echo 'NOT SET')"
+  echo "MISSING"; errors=$((errors + 1))
+fi
+
+echo -n "  Hyprland autologin (plasmalogin/SDDM)... "
+if grep -qs "Session=hyprland" /etc/plasmalogin.conf /etc/sddm.conf /etc/sddm.conf.d/ 2>/dev/null; then
+  echo "OK"
+else
+  echo "NOT SET"; errors=$((errors + 1))
 fi
 
 echo ""
@@ -357,6 +531,15 @@ if [ "$errors" -gt 0 ]; then
 else
   echo "All checks passed."
 fi
+
+# ── 9b. Phase-3 restore from staging ─────────────────────────────
+# Restores the pre-wipe backup (SSH keys, sops age key, Firefox
+# profile) from /mnt/staging/backup-for-cachyos. Idempotent — safe to
+# re-run; already-restored items are skipped. Per wayfinder #8, the
+# Firefox import is a curated copy into the HM-managed profile dir.
+
+section "Phase-3 restore from /mnt/staging"
+phase3_restore
 
 # ── 10. Done ────────────────────────────────────────────────────
 
@@ -368,8 +551,6 @@ echo "  Next steps:"
 echo "    1. Reboot"
 echo "    2. At SDDM, select 'Hyprland' session"
 echo "    3. Login — waybar, swaync, rofi should start"
-echo "    4. Restore keys + Firefox from /mnt/staging/backup-for-cachyos"
-echo "       (see ROADMAP.md Phase 3)"
-echo "    5. Run protonup-qt to install GE-Proton"
-echo "    6. HDD becomes a games disk later — owned by wayfinder ticket #12"
+echo "    4. Run protonup-qt to install GE-Proton"
+echo "    5. HDD becomes a games disk later — owned by wayfinder ticket #12"
 echo "==========================================="
