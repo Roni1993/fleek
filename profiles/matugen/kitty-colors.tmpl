@@ -1,11 +1,11 @@
 # --- Matugen theme: wallpaper-derived base ---
-# auto_lightness lifts the near-black background to a proper terminal dark.
-# ANSI colors live in ~/.config/kitty/kitty-ansi.conf (One Dark/Light,
-# written by theme-toggle).
-background            {{ colors.background.default.hex | auto_lightness: 18 }}
+# auto_lightness lifts the background to a terminal-appropriate dark;
+# saturate makes the accent (cursor/selection/url) more vivid.
+# ANSI colors live in ~/.config/kitty/kitty-ansi.conf (One Dark/Light).
+background            {{ colors.background.default.hex | auto_lightness: 10 }}
 foreground            {{ colors.on_background.default.hex }}
-cursor                {{ colors.primary.default.hex }}
+cursor                {{ colors.primary.default.hex | to_color | saturate: 20.0, "hsl" }}
 cursor_text_color     {{ colors.on_primary.default.hex }}
-selection_background  {{ colors.primary.default.hex }}
+selection_background  {{ colors.primary.default.hex | to_color | saturate: 20.0, "hsl" }}
 selection_foreground  {{ colors.on_primary.default.hex }}
-url_color             {{ colors.primary.default.hex }}
+url_color             {{ colors.primary.default.hex | to_color | saturate: 20.0, "hsl" }}
