@@ -13,13 +13,13 @@
 - [x] Window manager: **Hyprland**
 - [x] Bar/panel: **waybar**
 - [x] Notification daemon: **swaync**
-- [x] Launcher: **Vicinae**
+- [x] Launcher: **Vicinae** (nix Qt build can't init GL on NVIDIA — AUR vicinae-bin)
 - [x] Lockscreen: **hyprlock**
-- [x] Wallpaper daemon: **ssww**
+- [x] Wallpaper daemon: **awww** (set-wallpaper script drives awww + matugen)
 - [x] Idle manager: **hypridle**
 - [x] Output management: **nwg-displays**
 - [x] Clipboard: **cliphist + wl-clipboard**
-- [x] Theming: **Stylix + runtime toggle script**
+- [x] Theming: **matugen** (Material-You palette from wallpaper; Super+T light/dark)
 - [x] Night-light: **not needed** (theme toggle handles light/dark)
 - [x] Terminal: **kitty** (primary) + **ghostty** (secondary)
 - [x] Browser: **Firefox** (HM-managed)
