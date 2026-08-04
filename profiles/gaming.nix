@@ -26,9 +26,6 @@
     # Hyprland ecosystem (system: hyprland/hyprlock/hyprshot/hyprpicker/awww).
     # nwg-displays is a plain GTK client — safe.
     nwg-displays
-    # Vicinae launcher — pure Qt wayland client (safe); app search, clipboard,
-    # file search, window switching.
-    vicinae
 
     # Audio
     pavucontrol
@@ -286,8 +283,10 @@
   };
 
   # ── Launcher ──
-  # fuzzel is a pure Wayland compositor client; system-provided (pacman).
-  # catppuccin-mocha colors match the Hyprland/waybar palette.
+  # Vicinae (system, AUR vicinae-bin) is the primary launcher — the nix Qt
+  # build can't init OpenGL on NVIDIA (same EGL wall as kitty). Config lives
+  # at ~/.config/vicinae (managed outside HM for now).
+  # fuzzel (system, pacman) kept as fallback; config below.
   home.file.".config/fuzzel/fuzzel.ini" = {
     text = ''
       [main]

@@ -212,17 +212,8 @@ section "Gaming tooling (system builds)"
 # gamemode is NOT pulled in by cachyos-gaming-meta; install it explicitly.
 sudo pacman -S --noconfirm --needed gamemode
 
-section "NixOS-compat GL shim (/run/opengl-driver)"
-# nix-built apps expect the NixOS GL layout /run/opengl-driver -> store.
-# On CachyOS (standalone nix) point it at the system GL so nix GL *clients*
-# (waybar, swaync, rofi, firefox, ...) resolve the NVIDIA stack. Persisted
-# via tmpfiles.d because /run is tmpfs. NOTE: this does NOT fix nix GPU
-# BACKEND apps (hyprland etc.) — those abort on Hypr* ABI guards and must
-# stay system packages.
-printf 'L! /run/opengl-driver/lib - - - - /usr/lib\nL! /run/opengl-driver/share - - - - /usr/share\n' \
-  | sudo tee /etc/tmpfiles.d/opengl-driver.conf >/dev/null
-sudo systemd-tmpfiles --create /etc/tmpfiles.d/opengl-driver.conf
-echo "  /run/opengl-driver -> system GL (persisted)"
+section "Vicinae launcher (AUR — nix Qt build can't init OpenGL on NVIDIA)"
+paru -S --noconfirm vicinae-bin
 
 # ── 3b. Remove noctalia (notification daemon) ────────────────────
 # noctalia ships with CachyOS KDE and claims org.freedesktop.Notifications
