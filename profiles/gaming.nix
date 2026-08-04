@@ -90,6 +90,9 @@
       exec-once=awww-daemon
       exec-once=swaync
       exec-once=hypridle
+      # graphical-session.target never activates under system Hyprland
+      # (RefuseManualStart), so start HM's graphical-session services directly.
+      exec-once=systemctl --user start cliphist.service
       exec-once=/usr/lib/hyprpolkitagent/hyprpolkitagent
       exec-once=systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
       exec-once=dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
