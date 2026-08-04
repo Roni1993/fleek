@@ -283,35 +283,9 @@
   };
 
   # ── Launcher ──
-  # Vicinae (system, AUR vicinae-bin) is the primary launcher — the nix Qt
-  # build can't init OpenGL on NVIDIA (same EGL wall as kitty). Config lives
-  # at ~/.config/vicinae (managed outside HM for now).
-  # fuzzel (system, pacman) kept as fallback; config below.
-  home.file.".config/fuzzel/fuzzel.ini" = {
-    text = ''
-      [main]
-      font=JetBrainsMono Nerd Font:size=14
-      prompt="> "
-      terminal=kitty
-      layer=overlay
-      lines=10
-      width=40
-      horizontal-pad=20
-      vertical-pad=16
-      inner-pad=10
-      icons-enabled=yes
-
-      [colors]
-      background=1a1b26ee
-      text=c0caf5ff
-      prompt=7aa2f7ff
-      match=7dcfffff
-      selection=33467cff
-      selection-text=c0caf5ff
-      selection-match=7dcfffff
-      border=7aa2f7ff
-    '';
-  };
+  # Vicinae (system, AUR vicinae-bin) is the launcher — the nix Qt build
+  # can't init OpenGL on NVIDIA (same EGL wall as kitty). Config lives at
+  # ~/.config/vicinae (managed outside HM for now).
 
   # ── Lockscreen ──
   # hyprlock is system-provided (pacman); config managed here so the

@@ -13,7 +13,7 @@
 - [x] Window manager: **Hyprland**
 - [x] Bar/panel: **waybar**
 - [x] Notification daemon: **swaync**
-- [x] Launcher: **fuzzel**
+- [x] Launcher: **Vicinae**
 - [x] Lockscreen: **hyprlock**
 - [x] Wallpaper daemon: **ssww**
 - [x] Idle manager: **hypridle**
@@ -78,7 +78,7 @@
 - [x] **Import Firefox profile**: curated copy of `D:\backup-for-cachyos\firefox-profile\` into `~/.mozilla/firefox/roni/` per research #8 (places, favicons, logins+key4 pair, extensions, storage, prefs, cookies, certs).
 - [x] Reboot, autologin lands in **Hyprland** (system 0.56.1), login
 - [x] Verify WM starts, waybar renders
-- [ ] Verify: swaync (notifications), fuzzel (Super+Space), hyprlock (Super+L)
+- [ ] Verify: swaync (notifications), vicinae (Super+Space), hyprlock (Super+L)
 - [ ] Verify: awww wallpaper, cliphist clipboard history
 - [ ] Verify: kitty terminal with nushell
 - [x] Verify: Firefox with Wayland flags (MOZ_ENABLE_WAYLAND) — profile imported, dual-Firefox conflict resolved
@@ -126,7 +126,6 @@
 | HDD staging mount (ro) | bootstrap.sh | ntfs-3g + fstab at `/mnt/staging` |
 | Hyprland/hypridle/hyprlock/mangohud configs | home-manager | `home.file` (`gaming.nix`) |
 | waybar, swaync, nwg-displays | home-manager | `programs.*` / `home.packages` (safe compositor clients) |
-| fuzzel (launcher) | system (pacman) | pure Wayland client; config via `~/.config/fuzzel/fuzzel.ini` |
 | firefox | home-manager | `programs.firefox` (nix build works; profile imported) |
 | gamemode | system (pacman) | installed by bootstrap (not in gaming-meta); config via `~/.config/gamemode.ini` |
 | protonup-qt, goverlay, nvtop, gwe, pavucontrol | home-manager | `home.packages` |
