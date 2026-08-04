@@ -45,47 +45,49 @@
   - `windows-c/` — Windows C: irreplaceables (8.3MB): `.ssh` RSA key + known_hosts, house-purchase PDFs (Dragonstraat 24 Utrecht), ZMK corne firmware (UF2 + kernel patches), GitHub token + opencode auth
   - DECIDED to skip: other WSL distros (Debian/Ubuntu-20.04) uncommitted work, 168GB LLM models, game saves (Steam Cloud), Unreal/Godot projects
 - [ ] Update BIOS (optional, recommended) — v2405 .CAP on USB sdf3 via EZ Flash 3
-- [ ] Boot from USB, run Calamares installer:
+- [x] Boot from USB, run Calamares installer:
   - Partition NVMe 2TB: `/boot/efi` (1 GB, fat32) + `/` (rest, Btrfs)
   - Leave HDD 4TB untouched (bootstrap handles it)
   - Create user `roni`
-- [ ] Reboot into KDE session
+- [x] Reboot into KDE session
 
 ## Phase 2 — Bootstrap (automated)
 
-- [ ] Push fleek changes to GitHub (from current WSL machine): `git push`
-- [ ] Open Konsole, run: `curl -sL https://raw.githubusercontent.com/Roni1993/fleek/main/bootstrap.sh | bash`
-- [ ] Bootstrap handles:
+- [x] Push fleek changes to GitHub: `git push`
+- [x] Open Konsole, run: `curl -sL https://raw.githubusercontent.com/Roni1993/fleek/main/bootstrap.sh | bash`
+- [x] Bootstrap handles:
   - System update
   - base-devel + git
   - paru (AUR helper)
   - `cachyos-gaming-meta`
   - `gamescope-session-cachyos` (prebuilt CachyOS repo — NOT AUR, research #15)
   - `hyprpolkitagent` (Arch `extra`)
-  - HDD mounted read-only at `/mnt/staging` (NTFS untouched, per #6)
+  - System Hyprland stack (`hyprland hyprlock hypridle hyprshot hyprpicker awww`) — nix builds crash on NVIDIA EGL/GBM
+  - GUI apps with own GL renderers (`kitty ghostty discord mangohud`) as system builds
+  - HDD mounted read-only at `/mnt/staging` (NTFS untouched, per #6; reformat to `/mnt/games` is #12)
   - NVIDIA driver verification
-  - HDD partitioning + fstab + mount at `/mnt/games`
   - Determinate Nix install
   - Nix flakes enable
   - fleek clone + `nix run .#apply-gaming`
+  - Hyprland login session registration + plasmalogin/SDDM autologin
   - All HM-managed tools installed
 
 ## Phase 3 — Verification
 
-- [ ] **Restore WSL keys from HDD**: Copy `D:\backup-for-cachyos\wsl-keys\keys.txt` → `~/.config/sops/age/keys.txt`, and the SSH keypair to `~/.ssh/`. Set permissions: `chmod 600 ~/.ssh/id_ed25519`. Verify with `ssh -T git@github.com`.
-- [ ] **Import Firefox profile**: Copy `D:\backup-for-cachyos\firefox-profile\` contents into `~/.mozilla/firefox/<hm-profile>/`. The HM-managed Firefox profile directory is at: `ls ~/.mozilla/firefox/`. Replace placeholder profile contents, or update `profiles.ini` to point at a subdirectory with the backed-up data. Key files: `places.sqlite` (bookmarks), `logins.json` + `key4.db` (saved passwords), `extensions/` (addons).
-- [ ] Reboot, select **Hyprland** in SDDM, login
-- [ ] Verify WM starts, waybar renders
+- [x] **Restore WSL keys from HDD**: `wsl-keys/keys.txt` → `~/.config/sops/age/keys.txt`, SSH keypair → `~/.ssh/` (id_ed25519 + .pub), perms 600. Note: old key is removed from GitHub — rotation pending.
+- [x] **Import Firefox profile**: curated copy of `D:\backup-for-cachyos\firefox-profile\` into `~/.mozilla/firefox/roni/` per research #8 (places, favicons, logins+key4 pair, extensions, storage, prefs, cookies, certs).
+- [x] Reboot, autologin lands in **Hyprland** (system 0.56.1), login
+- [x] Verify WM starts, waybar renders
 - [ ] Verify: swaync (notifications), rofi (Super+Space), hyprlock (Super+L)
-- [ ] Verify: swww wallpaper, cliphist clipboard history
+- [ ] Verify: awww wallpaper, cliphist clipboard history
 - [ ] Verify: kitty terminal with nushell
-- [ ] Verify: Firefox with Wayland flags
+- [x] Verify: Firefox with Wayland flags (MOZ_ENABLE_WAYLAND) — profile imported, dual-Firefox conflict resolved
 - [ ] Verify: screenshot shortcuts (Print, Super+Shift+S)
 - [ ] Verify: hyprpolkitagent (launch a GUI app needing root, e.g. GParted)
 - [ ] Verify: Steam starts, Proton works
-- [ ] Add `/mnt/games/SteamLibrary` in Steam > Settings > Storage
+- [ ] Add `/mnt/games/SteamLibrary` in Steam > Settings > Storage (blocked by #12)
 - [ ] Test gamescope per-game: `gamescope -W 2560 -H 1440 -f -- %command%` in Steam launch options
-- [ ] Test Steam Game Mode session in SDDM
+- [ ] Test Steam Game Mode session in plasmalogin/SDDM
 - [ ] Run protonup-qt, install GE-Proton
 - [ ] Test gamemode: `gamemoderun %command%`
 - [ ] Test nvtop + gwe
@@ -117,15 +119,16 @@
 |---|---|---|
 | Kernel, NVIDIA drivers | `cachyos-gaming-meta` | pacman (bootstrap) |
 | Steam, Wine, Proton | `cachyos-gaming-meta` | pacman (bootstrap) |
-| Gamescope (CLI + session) | `gamescope-session-git` | AUR (bootstrap) |
-| hyprpolkitagent | AUR package | AUR (bootstrap) |
-| HDD partition + mount | bootstrap.sh | parted + fstab |
-| Hyprland WM + config | home-manager | `programs.hyprland` |
-| waybar, swaync, rofi, etc. | home-manager | `programs.*` / `services.*` |
-| kitty, firefox | home-manager | `programs.*` |
-| gamemode, mangohud config | home-manager | `programs.*` |
-| protonup-qt, goverlay, discord | home-manager | `home.packages` |
-| nvtop, gwe, pavucontrol | home-manager | `home.packages` |
+| Gamescope (CLI + session) | `gamescope-session-cachyos` | prebuilt CachyOS repo (bootstrap) |
+| hyprpolkitagent | Arch `extra` | pacman (bootstrap) |
+| Hyprland compositor + hyprlock/hypridle/hyprshot/hyprpicker/awww | system (pacman) | nix builds abort on NVIDIA EGL/GBM + Hypr\* ABI guards (bootstrap) |
+| kitty, ghostty, discord, mangohud (GL renderers / injectors) | system (pacman) | nix builds share kitty's NVIDIA EGL failure (bootstrap) |
+| HDD staging mount (ro) | bootstrap.sh | ntfs-3g + fstab at `/mnt/staging` |
+| Hyprland/hypridle/hyprlock/mangohud configs | home-manager | `home.file` (`gaming.nix`) |
+| waybar, swaync, rofi, nwg-displays | home-manager | `programs.*` / `home.packages` (safe compositor clients) |
+| firefox | home-manager | `programs.firefox` (nix build works; profile imported) |
+| gamemode | system | `cachyos-gaming-meta`; config via `~/.config/gamemode.ini` |
+| protonup-qt, goverlay, nvtop, gwe, pavucontrol | home-manager | `home.packages` |
 | Fonts (JetBrains Mono NF, Noto) | home-manager | `home.packages` |
 | Stylix theming | home-manager | `stylix.*` (uncomment to enable) |
 | git, ssh, gpg | home-manager | `programs.*` |
