@@ -405,8 +405,9 @@
   };
 
   # ── Gaming tools ──
-  # programs.gamemode was removed from home-manager; gamemode itself is
-  # installed system-wide by cachyos-gaming-meta. Config lives in ~/.config/gamemode.ini.
+  # programs.gamemode was removed from home-manager; the gamemode package
+  # is installed by bootstrap.sh (cachyos-gaming-meta does NOT pull it in).
+  # Config lives in ~/.config/gamemode.ini.
   home.file.".config/gamemode.ini" = {
     text = ''
       [general]

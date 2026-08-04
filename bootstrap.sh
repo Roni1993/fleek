@@ -208,6 +208,10 @@ section "GUI apps with own GL renderers (system builds)"
 # can't talk to NVIDIA, or inject into system processes with nix libs).
 sudo pacman -S --noconfirm --needed ghostty discord mangohud
 
+section "Gaming tooling (system builds)"
+# gamemode is NOT pulled in by cachyos-gaming-meta; install it explicitly.
+sudo pacman -S --noconfirm --needed gamemode
+
 section "NixOS-compat GL shim (/run/opengl-driver)"
 # nix-built apps expect the NixOS GL layout /run/opengl-driver -> store.
 # On CachyOS (standalone nix) point it at the system GL so nix GL *clients*

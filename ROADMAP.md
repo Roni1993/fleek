@@ -127,7 +127,7 @@
 | Hyprland/hypridle/hyprlock/mangohud configs | home-manager | `home.file` (`gaming.nix`) |
 | waybar, swaync, rofi, nwg-displays | home-manager | `programs.*` / `home.packages` (safe compositor clients) |
 | firefox | home-manager | `programs.firefox` (nix build works; profile imported) |
-| gamemode | system | `cachyos-gaming-meta`; config via `~/.config/gamemode.ini` |
+| gamemode | system (pacman) | installed by bootstrap (not in gaming-meta); config via `~/.config/gamemode.ini` |
 | protonup-qt, goverlay, nvtop, gwe, pavucontrol | home-manager | `home.packages` |
 | Fonts (JetBrains Mono NF, Noto) | home-manager | `home.packages` |
 | Stylix theming | home-manager | `stylix.*` (uncomment to enable) |
