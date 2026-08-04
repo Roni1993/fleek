@@ -74,6 +74,9 @@
   home.file.".config/hypr/hyprland.conf" = {
     text = ''
       $mod=SUPER
+      # matugen-generated palette (wallpaper-driven); absent until `matugen
+      # image <wall>` runs — hyprland warns but continues.
+      source = ~/.config/hypr/hyprland-colors.conf
       exec-once=/usr/bin/dbus-update-activation-environment --systemd DISPLAY HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE
 
       env=XCURSOR_SIZE,24
@@ -112,8 +115,8 @@
         gaps_in=5
         gaps_out=10
         border_size=2
-        col.active_border=rgb(cba6f7) rgb(f5c2e7) 45deg
-        col.inactive_border=rgb(45475a)
+        col.active_border=$primary $secondary
+        col.inactive_border=$outline_variant
         layout=dwindle
       }
 
@@ -217,6 +220,29 @@
       # fullscreen works; noblur/nomaximizerequest were removed in 0.56.
       windowrule=fullscreen class:^(.*.exe)$
     '';
+  };
+
+  # ── Dynamic theming — matugen ──
+  # matugen (system package) derives a Material-You palette from the
+  # wallpaper image and renders the templates below. HM manages matugen's
+  # config + templates; the generated files (~/.config/hypr/hyprland-colors.conf
+  # etc.) are matugen-owned runtime configs. Re-run with:
+  #   matugen image ~/Pictures/wallpaper.jpg   (add -t scheme-light for light)
+  home.file.".config/matugen/config.toml" = {
+    text = ''
+      [config]
+      caching = true
+      prefer = "darkness"
+
+      [templates.hyprland]
+      # absolute path: config.toml is a nix-store symlink, so relative
+      # input_paths would resolve into the store
+      input_path = "~/.config/matugen/templates/hyprland-colors.conf"
+      output_path = "~/.config/hypr/hyprland-colors.conf"
+    '';
+  };
+  home.file.".config/matugen/templates/hyprland-colors.conf" = {
+    source = ./matugen/hyprland-colors.tmpl;
   };
 
   # ── Bar ──
