@@ -404,8 +404,8 @@
       enable_audio_bell no
       tab_bar_edge top
       tab_bar_style powerline
-      # reload config when it changes; allow runtime theme reload
-      auto_reload_config on
+      # reload config when it changes (interval in seconds); allow runtime theme reload
+      auto_reload_config 1
       allow_remote_control yes
       listen_on unix:/tmp/kitty
       # matugen-generated palette (wallpaper-driven); regenerate with
