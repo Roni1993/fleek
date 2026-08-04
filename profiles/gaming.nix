@@ -241,6 +241,7 @@
       output_path = "~/.config/hypr/hyprland-colors.conf"
 
       [templates.kitty]
+      # wallpaper-derived base (bg/fg/accent) for kitty
       input_path = "~/.config/matugen/templates/kitty-colors.conf"
       output_path = "~/.config/kitty/kitty-colors.conf"
 
@@ -416,10 +417,10 @@
       auto_reload_config 1
       allow_remote_control yes
       listen_on unix:/tmp/kitty
-      # matugen-generated palette (wallpaper-driven); regenerate with
-      # `matugen image <wall>` / Super+T. Running kitty needs a reload
-      # (ctrl+shift+F5, or `kitty @ load-config` once a socket exists).
+      # matugen-generated base (bg/fg/accent) + One Dark/Light ANSI written
+      # by theme-toggle; reload with ctrl+shift+F5 / kitty @ load-config.
       include ~/.config/kitty/kitty-colors.conf
+      include ~/.config/kitty/kitty-ansi.conf
     '';
   };
 
@@ -533,6 +534,46 @@
       else
         gsettings set org.gnome.desktop.interface color-scheme prefer-dark
       fi
+      # kitty: One Dark / One Light ANSI palette (base bg/fg comes from matugen)
+      if [ "$new" = light ]; then
+        cat > "$HOME/.config/kitty/kitty-ansi.conf" <<'ANSI'
+color0  #383a42
+color1  #e45649
+color2  #50a14f
+color3  #c18401
+color4  #4078f2
+color5  #a626a4
+color6  #0184bc
+color7  #a0a1a7
+color8  #696c77
+color9  #e45649
+color10 #50a14f
+color11 #c18401
+color12 #4078f2
+color13 #a626a4
+color14 #0184bc
+color15 #ffffff
+ANSI
+      else
+        cat > "$HOME/.config/kitty/kitty-ansi.conf" <<'ANSI'
+color0  #282c34
+color1  #e06c75
+color2  #98c379
+color3  #e5c07b
+color4  #61afef
+color5  #c678dd
+color6  #56b6c2
+color7  #abb2bf
+color8  #5c6370
+color9  #e06c75
+color10 #98c379
+color11 #e5c07b
+color12 #61afef
+color13 #c678dd
+color14 #56b6c2
+color15 #ffffff
+ANSI
+      fi
       matugen image "$wallpaper" -m "$new" && {
         hyprctl reload
         # reload in place so active notifications survive
@@ -551,6 +592,25 @@
       wallpaper="''${1:-$HOME/projects/fleek/profiles/wallpaper.jpg}"
       if [ -f "$wallpaper" ]; then
         awww img "$wallpaper" --transition-type wipe --transition-fps 60
+        # kitty ANSI: One Dark (default dark mode)
+        cat > "$HOME/.config/kitty/kitty-ansi.conf" <<'ANSI'
+color0  #282c34
+color1  #e06c75
+color2  #98c379
+color3  #e5c07b
+color4  #61afef
+color5  #c678dd
+color6  #56b6c2
+color7  #abb2bf
+color8  #5c6370
+color9  #e06c75
+color10 #98c379
+color11 #e5c07b
+color12 #61afef
+color13 #c678dd
+color14 #56b6c2
+color15 #ffffff
+ANSI
         matugen image "$wallpaper" && {
           hyprctl reload
           pkill -USR2 -x .waybar-wrapped 2>/dev/null
