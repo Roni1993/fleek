@@ -282,10 +282,85 @@
   };
 
   # ── Launcher ──
+  # rofi is a plain compositor client (safe in nix). Custom
+  # catppuccin-mocha theme matches the Hyprland/waybar palette.
+  home.file.".config/rofi/themes/catppuccin-mocha.rasi" = {
+    text = ''
+      * {
+          background-color: transparent;
+          text-color: #cdd6f4;
+          margin: 0px;
+          padding: 0px;
+          spacing: 0px;
+      }
+
+      window {
+          transparency: "real";
+          background-color: rgba(30, 30, 46, 0.93);
+          border: 2px solid #cba6f7;
+          border-radius: 12px;
+          width: 620px;
+          margin: 80px;
+          padding: 12px;
+      }
+
+      inputbar {
+          background-color: transparent;
+          padding: 12px;
+      }
+
+      prompt {
+          background-color: #313244;
+          border-radius: 8px;
+          padding: 6px 12px;
+          text-color: #f5c2e7;
+      }
+
+      entry {
+          text-color: #cdd6f4;
+          padding: 6px 12px;
+          placeholder: "Search";
+      }
+
+      listview {
+          background-color: transparent;
+          padding: 8px 0px;
+          lines: 8;
+          columns: 1;
+      }
+
+      element {
+          padding: 10px 14px;
+          border-radius: 8px;
+          text-color: #cdd6f4;
+      }
+
+      element selected {
+          background-color: #313244;
+          text-color: #cba6f7;
+      }
+
+      element-icon {
+          size: 0.7em;
+          margin: 0px 8px 0px 0px;
+      }
+
+      scrollbar {
+          width: 6px;
+          background-color: transparent;
+          handle-color: #45475a;
+          border-radius: 3px;
+      }
+
+      mainbox {
+          background-color: transparent;
+      }
+    '';
+  };
   programs.rofi = {
     enable = true;
     package = pkgs.rofi;
-    theme = "drun";
+    theme = "catppuccin-mocha";
     extraConfig = {
       modi = "drun,run";
       show-icons = true;
