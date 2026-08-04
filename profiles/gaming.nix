@@ -239,10 +239,17 @@
       # input_paths would resolve into the store
       input_path = "~/.config/matugen/templates/hyprland-colors.conf"
       output_path = "~/.config/hypr/hyprland-colors.conf"
+
+      [templates.kitty]
+      input_path = "~/.config/matugen/templates/kitty-colors.conf"
+      output_path = "~/.config/kitty/kitty-colors.conf"
     '';
   };
   home.file.".config/matugen/templates/hyprland-colors.conf" = {
     source = ./matugen/hyprland-colors.tmpl;
+  };
+  home.file.".config/matugen/templates/kitty-colors.conf" = {
+    source = ./matugen/kitty-colors.tmpl;
   };
 
   # ── Bar ──
@@ -401,6 +408,9 @@
       enable_audio_bell no
       tab_bar_edge top
       tab_bar_style powerline
+      # matugen-generated palette (wallpaper-driven); regenerate with
+      # `matugen image <wall>` / Super+T. Running kitty needs a reload.
+      include ~/.config/kitty/kitty-colors.conf
     '';
   };
 
