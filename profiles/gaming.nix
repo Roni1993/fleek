@@ -166,9 +166,9 @@
       bind=$mod, E, exec, dolphin
       bind=$mod, F, fullscreen
       bind=$mod, V, togglefloating
-      bind=$mod, R, exec, rofi -show drun
+      bind=$mod, R, exec, fuzzel
       bind=$mod, P, pseudo
-      bind=$mod, SPACE, exec, rofi -show drun
+      bind=$mod, SPACE, exec, fuzzel
       bind=$mod, L, exec, hyprlock
       bind=$mod, T, exec, ~/.local/bin/theme-toggle
 
@@ -282,21 +282,32 @@
   };
 
   # ── Launcher ──
-  # rofi is a plain compositor client (safe in nix). Using the built-in
-  # gruvbox-dark theme (a custom rasi theme earlier caused a parse error —
-  # rofi doesn't accept CSS-style `border: Npx solid color` shorthand).
-  programs.rofi = {
-    enable = true;
-    package = pkgs.rofi;
-    theme = "gruvbox-dark";
-    extraConfig = {
-      modi = "drun,run";
-      show-icons = true;
-      display-drun = "  Apps";
-      display-run = "  Run";
-      drun-display-format = "{name}";
-      font = "JetBrainsMono Nerd Font 14";
-    };
+  # fuzzel is a pure Wayland compositor client; system-provided (pacman).
+  # catppuccin-mocha colors match the Hyprland/waybar palette.
+  home.file.".config/fuzzel/fuzzel.ini" = {
+    text = ''
+      [main]
+      font=JetBrainsMono Nerd Font:size=14
+      prompt="> "
+      terminal=kitty
+      layer=overlay
+      lines=10
+      width=40
+      horizontal-pad=20
+      vertical-pad=16
+      inner-pad=10
+      icons-enabled=yes
+
+      [colors]
+      background=1e1e2eee
+      text=cdd6f4ff
+      prompt=f5c2e7ff
+      match=cba6f7ff
+      selection=313244ff
+      selection-text=cdd6f4ff
+      selection-match=cba6f7ff
+      border=cba6f7ff
+    '';
   };
 
   # ── Lockscreen ──

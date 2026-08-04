@@ -201,7 +201,7 @@ section "Hyprland stack (system builds — nix builds crash on NVIDIA EGL/GBM)"
 # The nix/hyprland build aborts on this box (bundled mesa can't find
 # /run/opengl-driver/lib/gbm/dri_gbm.so on CachyOS -> DRM backend fails,
 # black screen). System builds link against system mesa + NVIDIA stack.
-sudo pacman -S --noconfirm --needed hyprland hyprlock hypridle hyprshot hyprpicker awww
+sudo pacman -S --noconfirm --needed hyprland hyprlock hypridle hyprshot hyprpicker awww fuzzel
 
 section "GUI apps with own GL renderers (system builds)"
 # nix ghostty/discord/mangohud share kitty's failure mode (bundled GL/EGL
