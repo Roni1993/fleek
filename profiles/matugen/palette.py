@@ -40,7 +40,12 @@ ADOPT_RANGE = 20
 
 L_NORMAL = 45
 L_BRIGHT = 68
-SAT_FALLBACK = 0.70
+# fallback (canonical-hue) colors stay muted so they don't fight the
+# wallpaper-derived tones; adopted colors keep the wallpaper's own saturation
+SAT_FALLBACK = 0.55
+# light mode: backgrounds are bright, so lift saturation to keep colors punchy
+SAT_LIGHT_BOOST = 1.15
+SAT_MAX = 0.92
 
 
 def hue_dist(a: float, b: float) -> float:
@@ -69,7 +74,7 @@ def sample_wallpaper(image: str) -> dict:
     return clusters
 
 
-def slot_colors(clusters: dict, slot: str) -> tuple[str, str]:
+def slot_colors(clusters: dict, slot: str, mode: str) -> tuple[str, str]:
     """(normal_hex, bright_hex) for a slot, pulling hue/sat from wallpaper if present."""
     nominal = SLOTS[slot]
     pts = clusters[slot]
@@ -84,6 +89,8 @@ def slot_colors(clusters: dict, slot: str) -> tuple[str, str]:
             hue, sat = nominal, SAT_FALLBACK
     else:
         hue, sat = nominal, SAT_FALLBACK
+    if mode == "light":
+        sat = min(sat * SAT_LIGHT_BOOST, SAT_MAX)
     return (
         hex_from_hsl(hue, sat, L_NORMAL),
         hex_from_hsl(hue, sat, L_BRIGHT),
@@ -107,7 +114,7 @@ def main() -> int:
 
     clusters = sample_wallpaper(image)
     for slot in SLOTS:
-        normal, bright = slot_colors(clusters, slot)
+        normal, bright = slot_colors(clusters, slot, mode)
         scheme["colors"][slot] = {"default": {"color": normal}}
         scheme["colors"][f"{slot}_bright"] = {"default": {"color": bright}}
 
