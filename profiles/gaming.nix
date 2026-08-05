@@ -538,39 +538,39 @@
       if [ "$new" = light ]; then
         cat > "$HOME/.config/kitty/kitty-ansi.conf" <<'ANSI'
 color0  #383a42
-color1  #e45649
-color2  #50a14f
-color3  #c18401
-color4  #4078f2
-color5  #a626a4
-color6  #0184bc
-color7  #a0a1a7
+color1  #ff4d3d
+color2  #3f9e3c
+color3  #e8a800
+color4  #2f6df6
+color5  #d010b4
+color6  #009ad8
+color7  #b0b3bb
 color8  #696c77
-color9  #e45649
-color10 #50a14f
-color11 #c18401
-color12 #4078f2
-color13 #a626a4
-color14 #0184bc
+color9  #ff5c4d
+color10 #53b24f
+color11 #f0b400
+color12 #4a7dff
+color13 #d425ba
+color14 #00aee0
 color15 #ffffff
 ANSI
       else
         cat > "$HOME/.config/kitty/kitty-ansi.conf" <<'ANSI'
 color0  #282c34
-color1  #e06c75
-color2  #98c379
-color3  #e5c07b
-color4  #61afef
-color5  #c678dd
-color6  #56b6c2
-color7  #abb2bf
+color1  #ff5f5f
+color2  #6fe381
+color3  #ffcc66
+color4  #66b8ff
+color5  #d178ff
+color6  #4ad8d8
+color7  #d0d7e2
 color8  #5c6370
-color9  #e06c75
-color10 #98c379
-color11 #e5c07b
-color12 #61afef
-color13 #c678dd
-color14 #56b6c2
+color9  #ff8a8a
+color10 #9df0ac
+color11 #ffe08a
+color12 #8fceff
+color13 #e3a6ff
+color14 #7ff0f0
 color15 #ffffff
 ANSI
       fi
@@ -595,20 +595,20 @@ ANSI
         # kitty ANSI: One Dark (default dark mode)
         cat > "$HOME/.config/kitty/kitty-ansi.conf" <<'ANSI'
 color0  #282c34
-color1  #e06c75
-color2  #98c379
-color3  #e5c07b
-color4  #61afef
-color5  #c678dd
-color6  #56b6c2
-color7  #abb2bf
+color1  #ff5f5f
+color2  #6fe381
+color3  #ffcc66
+color4  #66b8ff
+color5  #d178ff
+color6  #4ad8d8
+color7  #d0d7e2
 color8  #5c6370
-color9  #e06c75
-color10 #98c379
-color11 #e5c07b
-color12 #61afef
-color13 #c678dd
-color14 #56b6c2
+color9  #ff8a8a
+color10 #9df0ac
+color11 #ffe08a
+color12 #8fceff
+color13 #e3a6ff
+color14 #7ff0f0
 color15 #ffffff
 ANSI
         matugen image "$wallpaper" && {

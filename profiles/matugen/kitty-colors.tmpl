@@ -4,8 +4,8 @@
 # ANSI colors live in ~/.config/kitty/kitty-ansi.conf (One Dark/Light).
 background            {{ colors.background.default.hex | auto_lightness: 10 }}
 foreground            {{ colors.on_background.default.hex }}
-cursor                {{ colors.primary.default.hex | to_color | saturate: 30.0, "hsl" }}
+cursor                {{ colors.primary.default.hex | to_color | saturate: 40.0, "hsl" }}
 cursor_text_color     {{ colors.on_primary.default.hex }}
-selection_background  {{ colors.primary.default.hex | to_color | saturate: 30.0, "hsl" }}
+selection_background  {{ colors.primary.default.hex | to_color | saturate: 40.0, "hsl" }}
 selection_foreground  {{ colors.on_primary.default.hex }}
-url_color             {{ colors.primary.default.hex | to_color | saturate: 30.0, "hsl" }}
+url_color             {{ colors.primary.default.hex | to_color | saturate: 40.0, "hsl" }}
