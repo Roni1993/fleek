@@ -222,16 +222,18 @@
     '';
   };
 
-  # ── Dynamic theming — matugen ──
-  # matugen (system package) derives a Material-You palette from the
-  # wallpaper image and renders the templates below. HM manages matugen's
-  # config + templates; the generated files (~/.config/hypr/hyprland-colors.conf
-  # etc.) are matugen-owned runtime configs. Re-run with:
-  #   matugen image ~/Pictures/wallpaper.jpg   (add -t scheme-light for light)
+  # ── Dynamic theming — matugen + palette.py (custom scheme) ──
+  # palette.py dumps matugen's scheme-expressive Material palette (UI chrome)
+  # then injects six ANSI hues sampled from the wallpaper's actual hue
+  # distribution (Material fixed hues as fallback for empty slots), and renders
+  # config.toml + kitty.toml. HM manages matugen's config + templates; the
+  # generated files (~/.config/hypr/hyprland-colors.conf etc.) are matugen-owned
+  # runtime configs. Re-run with:
+  #   python3 ~/.config/matugen/palette.py ~/Pictures/wallpaper.jpg dark
   home.file.".config/matugen/config.toml" = {
     text = ''
       [config]
-      caching = true
+      caching = false
       prefer = "darkness"
 
       [templates.hyprland]
@@ -258,13 +260,12 @@
     source = ./matugen/hyprland-colors.tmpl;
   };
   home.file.".config/matugen/kitty.toml" = {
-    # separate invocation for kitty using the expressive scheme (distinct
-    # orange/teal/blue/red ANSI); main config stays tonal-spot for the rest.
+    # kitty palette (chrome + ANSI) rendered from palette.py's custom scheme;
+    # scheme type is baked into the dumped JSON so no -t is needed here.
     text = ''
       [config]
       prefer = "darkness"
-      # scheme type passed via CLI (-t scheme-expressive); no caching so
-      # the distinct-expressive palette is always computed fresh
+      # no caching: palette.py always computes fresh from the wallpaper
       [templates.kitty]
       input_path = "~/.config/matugen/templates/kitty-colors.conf"
       output_path = "~/.config/kitty/kitty-colors.conf"
@@ -272,6 +273,10 @@
   };
   home.file.".config/matugen/templates/kitty-colors.conf" = {
     source = ./matugen/kitty-colors.tmpl;
+  };
+  home.file.".config/matugen/palette.py" = {
+    source = ./matugen/palette.py;
+    executable = true;
   };
   home.file.".config/matugen/templates/waybar-style.css" = {
     source = ./matugen/waybar-style.css.tmpl;
@@ -542,8 +547,7 @@
         gsettings set org.gnome.desktop.interface color-scheme prefer-dark
       fi
       # kitty gets its full palette (base + ANSI) from matugen below
-      matugen image "$wallpaper" -m "$new" && {
-        matugen image "$wallpaper" -c "$HOME/.config/matugen/kitty.toml" -m "$new" -t scheme-expressive
+      python3 "$HOME/.config/matugen/palette.py" "$wallpaper" "$new" && {
         hyprctl reload
         # reload in place so active notifications survive
         pkill -USR2 -x .waybar-wrapped 2>/dev/null
@@ -561,8 +565,7 @@
       wallpaper="''${1:-$HOME/projects/fleek/profiles/wallpaper.jpg}"
       if [ -f "$wallpaper" ]; then
         awww img "$wallpaper" --transition-type wipe --transition-fps 60
-        matugen image "$wallpaper" && {
-          matugen image "$wallpaper" -c "$HOME/.config/matugen/kitty.toml" -m dark -t scheme-expressive
+        python3 "$HOME/.config/matugen/palette.py" "$wallpaper" dark && {
           hyprctl reload
           pkill -USR2 -x .waybar-wrapped 2>/dev/null
           swaync-client -rs 2>/dev/null
