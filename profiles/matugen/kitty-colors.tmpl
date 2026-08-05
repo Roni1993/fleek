@@ -1,6 +1,7 @@
-# --- Matugen theme: full wallpaper-derived palette ---
-# Base + ANSI all from matugen; saturate keeps them vivid (Material-You
-# container colors are otherwise too muted).
+# --- Matugen theme: wallpaper-derived chrome ---
+# bg/fg/accent from matugen. ANSI is a FIXED natural palette (Tango) —
+# matugen's Material/base16 colors are wallpaper-dominated (green here)
+# and indistinguishable in the terminal.
 background            {{ colors.background.default.hex | auto_lightness: 10 }}
 foreground            {{ colors.on_background.default.hex }}
 cursor                {{ colors.primary.default.hex | to_color | saturate: 40.0, "hsl" }}
@@ -9,20 +10,20 @@ selection_background  {{ colors.primary.default.hex | to_color | saturate: 40.0,
 selection_foreground  {{ colors.on_primary.default.hex }}
 url_color             {{ colors.primary.default.hex | to_color | saturate: 40.0, "hsl" }}
 
-# --- ANSI (vivid via saturate) ---
-color0  {{ colors.surface_variant.default.hex }}
-color1  {{ colors.error.default.hex | to_color | saturate: 60.0, "hsl" }}
-color2  {{ colors.tertiary.default.hex | to_color | saturate: 60.0, "hsl" }}
-color3  {{ colors.secondary.default.hex | to_color | saturate: 60.0, "hsl" }}
-color4  {{ colors.primary.default.hex | to_color | saturate: 60.0, "hsl" }}
-color5  {{ colors.tertiary.default.hex | to_color | saturate: 60.0, "hsl" }}
-color6  {{ colors.secondary.default.hex | to_color | saturate: 60.0, "hsl" }}
-color7  {{ colors.on_surface.default.hex }}
-color8  {{ colors.outline.default.hex }}
-color9  {{ colors.error_container.default.hex | to_color | saturate: 60.0, "hsl" }}
-color10 {{ colors.tertiary_container.default.hex | to_color | saturate: 60.0, "hsl" }}
-color11 {{ colors.secondary_container.default.hex | to_color | saturate: 60.0, "hsl" }}
-color12 {{ colors.primary_container.default.hex | to_color | saturate: 60.0, "hsl" }}
-color13 {{ colors.on_secondary_container.default.hex | to_color | saturate: 60.0, "hsl" }}
-color14 {{ colors.on_primary_container.default.hex | to_color | saturate: 60.0, "hsl" }}
-color15 {{ colors.on_surface.default.hex }}
+# --- ANSI: Tango (natural, distinguishable) ---
+color0  #2e3436
+color1  #cc0000
+color2  #4e9a06
+color3  #c4a000
+color4  #3465a4
+color5  #75507b
+color6  #06989a
+color7  #d3d7cf
+color8  #555753
+color9  #ef2929
+color10 #8ae234
+color11 #fce94f
+color12 #729fcf
+color13 #ad7fa8
+color14 #34e2e2
+color15 #eeeeec
