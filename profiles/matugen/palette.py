@@ -44,7 +44,7 @@ L_BRIGHT = 68
 # wallpaper-derived tones; adopted colors keep the wallpaper's own saturation
 SAT_FALLBACK = 0.55
 # light mode: backgrounds are bright, so lift saturation to keep colors punchy
-SAT_LIGHT_BOOST = 1.15
+SAT_LIGHT_BOOST = 1.35
 SAT_MAX = 0.92
 
 
