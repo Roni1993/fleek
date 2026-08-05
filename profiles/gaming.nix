@@ -240,11 +240,6 @@
       input_path = "~/.config/matugen/templates/hyprland-colors.conf"
       output_path = "~/.config/hypr/hyprland-colors.conf"
 
-      [templates.kitty]
-      # wallpaper-derived base (bg/fg/accent) for kitty
-      input_path = "~/.config/matugen/templates/kitty-colors.conf"
-      output_path = "~/.config/kitty/kitty-colors.conf"
-
       [templates.waybar]
       input_path = "~/.config/matugen/templates/waybar-style.css"
       output_path = "~/.config/waybar/style.css"
@@ -261,6 +256,19 @@
   };
   home.file.".config/matugen/templates/hyprland-colors.conf" = {
     source = ./matugen/hyprland-colors.tmpl;
+  };
+  home.file.".config/matugen/kitty.toml" = {
+    # separate invocation for kitty using the expressive scheme (distinct
+    # orange/teal/blue/red ANSI); main config stays tonal-spot for the rest.
+    text = ''
+      [config]
+      prefer = "darkness"
+      # scheme type passed via CLI (-t scheme-expressive); no caching so
+      # the distinct-expressive palette is always computed fresh
+      [templates.kitty]
+      input_path = "~/.config/matugen/templates/kitty-colors.conf"
+      output_path = "~/.config/kitty/kitty-colors.conf"
+    '';
   };
   home.file.".config/matugen/templates/kitty-colors.conf" = {
     source = ./matugen/kitty-colors.tmpl;
@@ -534,6 +542,7 @@
       fi
       # kitty gets its full palette (base + ANSI) from matugen below
       matugen image "$wallpaper" -m "$new" && {
+        matugen image "$wallpaper" -c "$HOME/.config/matugen/kitty.toml" -m "$new" -t scheme-expressive
         hyprctl reload
         # reload in place so active notifications survive
         pkill -USR2 -x .waybar-wrapped 2>/dev/null
@@ -552,6 +561,7 @@
       if [ -f "$wallpaper" ]; then
         awww img "$wallpaper" --transition-type wipe --transition-fps 60
         matugen image "$wallpaper" && {
+          matugen image "$wallpaper" -c "$HOME/.config/matugen/kitty.toml" -m dark -t scheme-expressive
           hyprctl reload
           pkill -USR2 -x .waybar-wrapped 2>/dev/null
           swaync-client -rs 2>/dev/null
