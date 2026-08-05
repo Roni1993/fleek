@@ -417,10 +417,8 @@
       auto_reload_config 1
       allow_remote_control yes
       listen_on unix:/tmp/kitty
-      # matugen-generated base (bg/fg/accent) + One Dark/Light ANSI written
-      # by theme-toggle; reload with ctrl+shift+F5 / kitty @ load-config.
+      # matugen-generated palette (base + ANSI); reload with ctrl+shift+F5.
       include ~/.config/kitty/kitty-colors.conf
-      include ~/.config/kitty/kitty-ansi.conf
     '';
   };
 
@@ -534,46 +532,7 @@
       else
         gsettings set org.gnome.desktop.interface color-scheme prefer-dark
       fi
-      # kitty: One Dark / One Light ANSI palette (base bg/fg comes from matugen)
-      if [ "$new" = light ]; then
-        cat > "$HOME/.config/kitty/kitty-ansi.conf" <<'ANSI'
-color0  #383a42
-color1  #ff4d3d
-color2  #3f9e3c
-color3  #e8a800
-color4  #2f6df6
-color5  #d010b4
-color6  #009ad8
-color7  #b0b3bb
-color8  #696c77
-color9  #ff5c4d
-color10 #53b24f
-color11 #f0b400
-color12 #4a7dff
-color13 #d425ba
-color14 #00aee0
-color15 #ffffff
-ANSI
-      else
-        cat > "$HOME/.config/kitty/kitty-ansi.conf" <<'ANSI'
-color0  #282c34
-color1  #ff5f5f
-color2  #6fe381
-color3  #ffcc66
-color4  #66b8ff
-color5  #d178ff
-color6  #4ad8d8
-color7  #d0d7e2
-color8  #5c6370
-color9  #ff8a8a
-color10 #9df0ac
-color11 #ffe08a
-color12 #8fceff
-color13 #e3a6ff
-color14 #7ff0f0
-color15 #ffffff
-ANSI
-      fi
+      # kitty gets its full palette (base + ANSI) from matugen below
       matugen image "$wallpaper" -m "$new" && {
         hyprctl reload
         # reload in place so active notifications survive
@@ -592,25 +551,6 @@ ANSI
       wallpaper="''${1:-$HOME/projects/fleek/profiles/wallpaper.jpg}"
       if [ -f "$wallpaper" ]; then
         awww img "$wallpaper" --transition-type wipe --transition-fps 60
-        # kitty ANSI: One Dark (default dark mode)
-        cat > "$HOME/.config/kitty/kitty-ansi.conf" <<'ANSI'
-color0  #282c34
-color1  #ff5f5f
-color2  #6fe381
-color3  #ffcc66
-color4  #66b8ff
-color5  #d178ff
-color6  #4ad8d8
-color7  #d0d7e2
-color8  #5c6370
-color9  #ff8a8a
-color10 #9df0ac
-color11 #ffe08a
-color12 #8fceff
-color13 #e3a6ff
-color14 #7ff0f0
-color15 #ffffff
-ANSI
         matugen image "$wallpaper" && {
           hyprctl reload
           pkill -USR2 -x .waybar-wrapped 2>/dev/null
