@@ -425,8 +425,10 @@
       auto_reload_config 1
       allow_remote_control yes
       listen_on unix:/tmp/kitty
-      # matugen-generated palette (base + ANSI); reload with ctrl+shift+F5.
+      # matugen-generated chrome (bg/fg/accent) + Gruvbox ANSI written by
+      # theme-toggle; reload with ctrl+shift+F5.
       include ~/.config/kitty/kitty-colors.conf
+      include ~/.config/kitty/kitty-ansi.conf
     '';
   };
 
@@ -541,6 +543,46 @@
         gsettings set org.gnome.desktop.interface color-scheme prefer-dark
       fi
       # kitty gets its full palette (base + ANSI) from matugen below
+      # kitty ANSI: Gruvbox (dark mode bright colors lighter, light mode darker)
+      if [ "$new" = light ]; then
+        cat > "$HOME/.config/kitty/kitty-ansi.conf" <<'ANSI'
+color0  #fbf1c7
+color1  #cc241d
+color2  #98971a
+color3  #d79921
+color4  #458588
+color5  #b16286
+color6  #689d6a
+color7  #7c6f64
+color8  #928374
+color9  #9d0006
+color10 #79740e
+color11 #b57614
+color12 #076678
+color13 #8f3f71
+color14 #427b58
+color15 #3c3836
+ANSI
+      else
+        cat > "$HOME/.config/kitty/kitty-ansi.conf" <<'ANSI'
+color0  #282828
+color1  #cc241d
+color2  #98971a
+color3  #d79921
+color4  #458588
+color5  #b16286
+color6  #689d6a
+color7  #a89984
+color8  #928374
+color9  #fb4934
+color10 #b8bb26
+color11 #fabd2f
+color12 #83a598
+color13 #d3869b
+color14 #8ec07c
+color15 #ebdbb2
+ANSI
+      fi
       matugen image "$wallpaper" -m "$new" && {
         matugen image "$wallpaper" -c "$HOME/.config/matugen/kitty.toml" -m "$new" -t scheme-expressive
         hyprctl reload
@@ -560,6 +602,25 @@
       wallpaper="''${1:-$HOME/projects/fleek/profiles/wallpaper.jpg}"
       if [ -f "$wallpaper" ]; then
         awww img "$wallpaper" --transition-type wipe --transition-fps 60
+        # kitty ANSI: Gruvbox Dark (default mode)
+        cat > "$HOME/.config/kitty/kitty-ansi.conf" <<'ANSI'
+color0  #282828
+color1  #cc241d
+color2  #98971a
+color3  #d79921
+color4  #458588
+color5  #b16286
+color6  #689d6a
+color7  #a89984
+color8  #928374
+color9  #fb4934
+color10 #b8bb26
+color11 #fabd2f
+color12 #83a598
+color13 #d3869b
+color14 #8ec07c
+color15 #ebdbb2
+ANSI
         matugen image "$wallpaper" && {
           matugen image "$wallpaper" -c "$HOME/.config/matugen/kitty.toml" -m dark -t scheme-expressive
           hyprctl reload
