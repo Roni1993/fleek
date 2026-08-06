@@ -89,11 +89,15 @@
       env=MOZ_ENABLE_WAYLAND,1
       env=GDK_BACKEND,wayland,x11
 
-      exec-once=waybar
       exec-once=awww-daemon
       exec-once=swaync
       exec-once=hypridle
       exec-once=vicinae server
+      # waybar is started by its HM systemd user service (no exec-once, which
+      # would spawn a second bar); re-apply the theme after login so all
+      # matugen outputs match the persisted mode/wallpaper (kitty etc. read
+      # them fresh at startup).
+      exec-once=sh -c 'sleep 3; ~/.local/bin/apply-theme.sh "$(cat ~/.cache/theme-mode 2>/dev/null || echo dark)"'
       # graphical-session.target never activates under system Hyprland
       # (RefuseManualStart), so start HM's graphical-session services directly.
       exec-once=systemctl --user start cliphist.service
@@ -675,9 +679,27 @@
   #   };
   # };
 
+  # ── Theme apply helper ──
+  # Regenerates the matugen palette for the given mode + wallpaper and reloads
+  # every themed surface in place. Used by theme-toggle, set-wallpaper and the
+  # login exec-once (so kitty/waybar/swaync start fresh with the right theme).
+  home.file.".local/bin/apply-theme.sh" = {
+    executable = true;
+    text = ''
+      #!/usr/bin/env bash
+      mode="''${1:-dark}"
+      wallpaper="''${2:-$HOME/projects/fleek/profiles/wallpaper.jpg}"
+      python3 "$HOME/.config/matugen/palette.py" "$wallpaper" "$mode" || exit 1
+      hyprctl reload
+      # reload in place so active notifications survive
+      pkill -USR2 -x .waybar-wrapped 2>/dev/null
+      swaync-client -rs 2>/dev/null
+      kitty @ --to unix:/tmp/kitty load-config 2>/dev/null
+    '';
+  };
+
   # ── Theme toggle script (light ↔ dark) ──
-  # Super+T: re-generate the matugen palette in the opposite mode and
-  # reload Hyprland. GTK/Qt/kitty/waybar follow in a later pass.
+  # Super+T: flip the mode and re-generate the palette.
   home.file.".local/bin/theme-toggle" = {
     executable = true;
     text = ''
@@ -686,7 +708,6 @@
       mode=$(cat "$state" 2>/dev/null || echo dark)
       [ "$mode" = dark ] && new=light || new=dark
       echo "$new" > "$state"
-      wallpaper="''${1:-$HOME/projects/fleek/profiles/wallpaper.jpg}"
       # drive system color-scheme (GTK/Qt follow it); vicinae theme is applied
       # automatically by matugen's post_hook (theme set matugen)
       if [ "$new" = light ]; then
@@ -694,14 +715,7 @@
       else
         gsettings set org.gnome.desktop.interface color-scheme prefer-dark
       fi
-      # kitty gets its full palette (base + ANSI) from matugen below
-      python3 "$HOME/.config/matugen/palette.py" "$wallpaper" "$new" && {
-        hyprctl reload
-        # reload in place so active notifications survive
-        pkill -USR2 -x .waybar-wrapped 2>/dev/null
-        swaync-client -rs 2>/dev/null
-        kitty @ --to unix:/tmp/kitty load-config 2>/dev/null
-      }
+      exec "$HOME/.local/bin/apply-theme.sh" "$new"
     '';
   };
 
@@ -713,12 +727,8 @@
       wallpaper="''${1:-$HOME/projects/fleek/profiles/wallpaper.jpg}"
       if [ -f "$wallpaper" ]; then
         awww img "$wallpaper" --transition-type wipe --transition-fps 60
-        python3 "$HOME/.config/matugen/palette.py" "$wallpaper" dark && {
-          hyprctl reload
-          pkill -USR2 -x .waybar-wrapped 2>/dev/null
-          swaync-client -rs 2>/dev/null
-          kitty @ --to unix:/tmp/kitty load-config 2>/dev/null
-        }
+        mode=$(cat "$HOME/.cache/theme-mode" 2>/dev/null || echo dark)
+        exec "$HOME/.local/bin/apply-theme.sh" "$mode" "$wallpaper"
       fi
     '';
   };
