@@ -290,6 +290,25 @@
       [templates.helix]
       input_path = "~/.config/matugen/templates/helix-theme.toml"
       output_path = "~/.config/helix/themes/matugen.toml"
+
+      [templates.midnight_discord]
+      input_path = "~/.config/matugen/templates/midnight-discord.css"
+      output_path = "~/.config/vesktop/themes/midnight-discord.css"
+
+      [templates.spicetify]
+      input_path = "~/.config/matugen/templates/spicetify.ini"
+      output_path = "~/.config/spicetify/Themes/matugen/color.ini"
+
+      [templates.zed]
+      input_path = "~/.config/matugen/templates/zed-theme.json"
+      output_path = "~/.config/zed/themes/matugen.json"
+
+      [templates.steam]
+      input_path = "~/.config/matugen/templates/steam.css"
+      output_path = "~/.config/matugen/generated/steam.css"
+      # CSS Loader (Decky) reads ~/homebrew/themes/<name>/theme.css; copy the
+      # rendered file there so it shows up as an enablable theme.
+      post_hook = "mkdir -p ~/homebrew/themes/matugen && cp ~/.config/matugen/generated/steam.css ~/homebrew/themes/matugen/theme.css"
     '';
   };
   home.file.".config/matugen/templates/hyprland-colors.conf" = {
@@ -355,6 +374,22 @@
   };
   home.file.".config/matugen/templates/helix-theme.toml" = {
     source = ./matugen/helix-theme.toml.tmpl;
+  };
+  home.file.".config/matugen/templates/midnight-discord.css" = {
+    source = ./matugen/midnight-discord.css.tmpl;
+  };
+  home.file.".config/matugen/templates/spicetify.ini" = {
+    source = ./matugen/spicetify.ini.tmpl;
+  };
+  home.file.".config/matugen/templates/zed-theme.json" = {
+    source = ./matugen/zed-theme.json.tmpl;
+  };
+  home.file.".config/matugen/templates/steam.css" = {
+    source = ./matugen/steam.css.tmpl;
+  };
+  # matugen can't create this dir; HM ensures it exists for the theme output
+  home.file.".config/zed/themes/.keep" = {
+    text = "";
   };
   # ── App theming wiring (matugen-generated files) ──
   home.file.".config/ghostty/config.ghostty" = {
