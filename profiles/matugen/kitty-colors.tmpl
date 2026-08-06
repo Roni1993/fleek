@@ -11,8 +11,9 @@ url_color             {{ colors.primary.default.hex | to_color | saturate: 65.0,
 active_border_color   {{ colors.primary.default.hex | to_color | saturate: 65.0, "hsl" }}
 inactive_border_color {{ colors.outline.default.hex }}
 
-# --- ANSI (custom scheme: wallpaper hues via palette.py, Material fallback) ---
-# normal L45 / bright L68; color0/7/8/15 stay Material (mode-aware)
+# --- ANSI (custom scheme: wallpaper hues, contrast-solved per mode) ---
+# lightness solved by palette.py: dark = normal darkest-readable/bright lighter,
+# light = normal lightest-readable/bright darker; color0/7/8/15 stay Material
 color0  {{ colors.surface_variant.default.hex | to_color | set_lightness: 20 }}
 color1  {{ colors.red.default.hex }}
 color2  {{ colors.green.default.hex }}
