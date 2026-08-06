@@ -1,6 +1,6 @@
-# --- Matugen (scheme-expressive): full palette with forced lightness ---
-# set_lightness normalizes contrast so ANSI stays readable on light AND dark
-# backgrounds, with distinct normal/bright pairs (L45 / L68).
+# --- Matugen (scheme-expressive) + palette.py custom scheme ---
+# chrome from the Material palette; ANSI hues from the wallpaper with
+# contrast-solved lightness (WCAG normal 4.5 / bright 6.5, per mode)
 background            {{ colors.background.default.hex | auto_lightness: 10 }}
 foreground            {{ colors.on_background.default.hex }}
 cursor                {{ colors.primary.default.hex | to_color | saturate: 65.0, "hsl" }}
