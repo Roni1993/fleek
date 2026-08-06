@@ -343,6 +343,34 @@
       injects them using the --mg-* palette variables.
     '';
   };
+  # userChrome.css is HM-managed rather than relying on the extension's toggle
+  # (whose WRITE_USER_CHROME didn't reliably reach the native host). This is
+  # the compact-toolbar/scrollbar CSS the host would write; browser CHROME
+  # COLORS still come from MatugenFox's browser-theme path (works).
+  home.file.".mozilla/firefox/roni/chrome/userChrome.css" = {
+    text = ''
+      /* MatugenFox userChrome.css - Auto-generated, do not edit manually */
+      /* Font size: 13px */
+
+      /* ── Scrollbar ── */
+      :root {
+        --uc-base-font-size: 13px;
+        scrollbar-width: thin;
+      }
+
+      /* ── Toolbar compact ── */
+      #nav-bar {
+        height: calc(var(--uc-base-font-size) * 2.8) !important;
+      }
+
+      /* ── Context menu ── */
+      menupopup > menuitem,
+      menupopup > menu {
+        font-size: var(--uc-base-font-size) !important;
+        min-height: calc(var(--uc-base-font-size) * 1.8) !important;
+      }
+    '';
+  };
 
   # ── Bar ──
   programs.waybar = {
