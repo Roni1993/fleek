@@ -280,6 +280,14 @@
       [templates.nvim]
       input_path = "~/.config/matugen/templates/nvim-colors.lua"
       output_path = "~/.config/nvim/matugen.lua"
+
+      [templates.helix]
+      input_path = "~/.config/matugen/templates/helix-theme.toml"
+      output_path = "~/.config/helix/themes/matugen.toml"
+
+      [templates.starship]
+      input_path = "~/.config/matugen/templates/starship.toml"
+      output_path = "~/.config/starship.toml"
     '';
   };
   home.file.".config/matugen/templates/hyprland-colors.conf" = {
@@ -342,6 +350,12 @@
   };
   home.file.".config/matugen/templates/nvim-colors.lua" = {
     source = ./matugen/nvim-colors.lua.tmpl;
+  };
+  home.file.".config/matugen/templates/helix-theme.toml" = {
+    source = ./matugen/helix-theme.toml.tmpl;
+  };
+  home.file.".config/matugen/templates/starship.toml" = {
+    source = ./matugen/starship.toml.tmpl;
   };
   # ── App theming wiring (matugen-generated files) ──
   home.file.".config/ghostty/config.ghostty" = {
@@ -459,6 +473,16 @@
         vim.cmd("colorscheme habamax")
       end
     '';
+  };
+  # helix: use the matugen-generated theme
+  home.file.".config/helix/config.toml" = {
+    text = ''
+      theme = "matugen"
+    '';
+  };
+  # matugen can't create this dir; HM ensures it exists for the theme output
+  home.file.".config/helix/themes/.keep" = {
+    text = "";
   };
 
   # ── MatugenFox (Firefox dynamic theming) ──

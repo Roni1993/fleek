@@ -1,0 +1,69 @@
+# Starship prompt — user's design, colors from matugen (Material roles)
+format = "[](bg:{{ colors.primary.default.hex }})$os$username[](bg:{{ colors.tertiary.default.hex }} fg:{{ colors.primary.default.hex }})$directory[](fg:{{ colors.tertiary.default.hex }} bg:{{ colors.primary_fixed.default.hex }})$git_branch$git_status[](fg:{{ colors.primary_fixed.default.hex }} bg:{{ colors.secondary.default.hex }})$golang$gradle$java$nodejs$rust[](fg:{{ colors.secondary.default.hex }} bg:{{ colors.secondary_fixed.default.hex }})$docker_context[](fg:{{ colors.secondary_fixed.default.hex }} bg:{{ colors.primary_fixed_dim.default.hex }})$time[ ](fg:{{ colors.primary_fixed_dim.default.hex }})"
+
+[directory]
+format = "[ $path ]($style)"
+style = "bg:{{ colors.tertiary.default.hex }}"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+Documents = "󰈙"
+Downloads = ""
+Music = ""
+Pictures = ""
+
+[docker_context]
+format = "[ $symbol $context ]($style)"
+style = "bg:{{ colors.secondary_fixed.default.hex }}"
+symbol = ""
+
+[git_branch]
+format = "[ $symbol $branch ]($style)"
+style = "bg:{{ colors.primary_fixed.default.hex }}"
+symbol = ""
+
+[git_status]
+format = "[$all_status$ahead_behind ]($style)"
+style = "bg:{{ colors.primary_fixed.default.hex }}"
+
+[golang]
+format = "[ $symbol ($version) ]($style)"
+style = "bg:{{ colors.secondary.default.hex }}"
+symbol = ""
+
+[gradle]
+format = "[ $symbol ($version) ]($style)"
+style = "bg:{{ colors.secondary.default.hex }}"
+
+[java]
+format = "[ $symbol ($version) ]($style)"
+style = "bg:{{ colors.secondary.default.hex }}"
+symbol = ""
+
+[nodejs]
+format = "[ $symbol ($version) ]($style)"
+style = "bg:{{ colors.secondary.default.hex }}"
+symbol = ""
+
+[os]
+disabled = true
+style = "bg:{{ colors.primary.default.hex }}"
+
+[rust]
+format = "[ $symbol ($version) ]($style)"
+style = "bg:{{ colors.secondary.default.hex }}"
+symbol = ""
+
+[time]
+disabled = false
+format = "[ ♥ $time ]($style)"
+style = "bg:{{ colors.primary_fixed_dim.default.hex }}"
+time_format = "%R"
+
+[username]
+disabled = false
+format = "[$user ]($style)"
+show_always = true
+style_root = "bg:{{ colors.primary.default.hex }}"
+style_user = "bg:{{ colors.primary.default.hex }}"
