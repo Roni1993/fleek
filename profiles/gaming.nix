@@ -328,7 +328,8 @@
         "colorsPath": "~/.config/matugen/generated/firefox_websites.css",
         "websitesDir": "~/.config/dusky_sites",
         "browserThemeEnabled": true,
-        "webThemeEnabled": false
+        "webThemeEnabled": false,
+        "firefoxProfilePath": "/home/roni/.mozilla/firefox/roni"
       }
     '';
   };
@@ -687,6 +688,8 @@
         "layout.css.devPixelsPerPx" = "1.0";
         "media.ffmpeg.vaapi.enabled" = true;
         "widget.use-xdg-desktop-portal.file-picker" = 1;
+        # MatugenFox userChrome/userContent injection needs this on
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
       };
     };
   };
