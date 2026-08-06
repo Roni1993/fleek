@@ -263,14 +263,23 @@
       [templates.firefox_websites]
       input_path = "~/.config/matugen/templates/firefox_websites.css"
       output_path = "~/.config/matugen/generated/firefox_websites.css"
+
+      [templates.btop]
+      input_path = "~/.config/matugen/templates/btop.theme"
+      output_path = "~/.config/btop/themes/matugen.theme"
+
+      [templates.micro]
+      input_path = "~/.config/matugen/templates/micro.micro"
+      output_path = "~/.config/micro/colorschemes/matugen.micro"
     '';
   };
   home.file.".config/matugen/templates/hyprland-colors.conf" = {
     source = ./matugen/hyprland-colors.tmpl;
   };
   home.file.".config/matugen/kitty.toml" = {
-    # kitty palette (chrome + ANSI) rendered from palette.py's custom scheme;
-    # scheme type is baked into the dumped JSON so no -t is needed here.
+    # Terminal palettes rendered AFTER palette.py injects the custom ANSI
+    # roles (red/green/.../cyan_bright), so kitty/ghostty/alacritty share the
+    # same wallpaper-derived scheme. Rendered via `matugen json` (post-patch).
     text = ''
       [config]
       prefer = "darkness"
@@ -278,6 +287,14 @@
       [templates.kitty]
       input_path = "~/.config/matugen/templates/kitty-colors.conf"
       output_path = "~/.config/kitty/kitty-colors.conf"
+
+      [templates.ghostty]
+      input_path = "~/.config/matugen/templates/ghostty-colors.conf"
+      output_path = "~/.config/ghostty/themes/matugen"
+
+      [templates.alacritty]
+      input_path = "~/.config/matugen/templates/alacritty-colors.toml"
+      output_path = "~/.config/alacritty/colors.toml"
     '';
   };
   home.file.".config/matugen/templates/kitty-colors.conf" = {
@@ -298,6 +315,109 @@
   };
   home.file.".config/matugen/templates/firefox_websites.css" = {
     source = ./matugen/firefox_websites.css.tmpl;
+  };
+  home.file.".config/matugen/templates/ghostty-colors.conf" = {
+    source = ./matugen/ghostty-colors.tmpl;
+  };
+  home.file.".config/matugen/templates/alacritty-colors.toml" = {
+    source = ./matugen/alacritty-colors.tmpl;
+  };
+  home.file.".config/matugen/templates/btop.theme" = {
+    source = ./matugen/btop.theme.tmpl;
+  };
+  home.file.".config/matugen/templates/micro.micro" = {
+    source = ./matugen/micro.micro.tmpl;
+  };
+  # ── App theming wiring (matugen-generated files) ──
+  home.file.".config/ghostty/config.ghostty" = {
+    text = ''
+      # Ghostty (HM-managed); colors come from the matugen-generated theme
+      # (~/.config/ghostty/themes/matugen).
+      theme = matugen
+    '';
+  };
+  # matugen can't create this dir; HM ensures it exists for the theme output
+  home.file.".config/ghostty/themes/.keep" = {
+    text = "";
+  };
+  home.file.".config/alacritty/alacritty.toml" = {
+    text = ''
+      [general]
+      working_directory = "None"
+      live_config_reload = true
+      # matugen-generated colors (colors.toml); the inline [colors] blocks were
+      # removed so the import isn't overridden.
+      import = ["~/.config/alacritty/colors.toml"]
+
+      [env]
+      TERM = "xterm-256color"
+      WINIT_X11_SCALE_FACTOR = "1.0"
+
+      [window]
+      dimensions = { columns = 100, lines = 30 }
+      dynamic_padding = true
+      decorations = "Full"
+      opacity = 0.8
+      title = "Alacritty@CachyOS"
+      class = { instance = "Alacritty", general = "Alacritty" }
+      decorations_theme_variant = "Dark"
+
+      [scrolling]
+      history = 10000
+      multiplier = 3
+
+      [font]
+      normal = { family = "monospace", style = "Regular" }
+      bold = { family = "monospace", style = "Bold" }
+      italic = { family = "monospace", style = "Italic" }
+      bold_italic = { family = "monospace", style = "Bold Italic" }
+      size = 12.0
+
+      [selection]
+      semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
+      save_to_clipboard = true
+
+      [cursor]
+      style = { shape = "Underline", blinking = "Off" }
+      unfocused_hollow = true
+      thickness = 0.15
+
+      [mouse]
+      hide_when_typing = true
+      bindings = [
+      { mouse = "Middle", mods = "None", action = "PasteSelection" },
+      ]
+
+      [keyboard]
+      bindings = [
+      { key = "Paste", mods = "None", action = "Paste" },
+      { key = "Copy", mods = "None", action = "Copy" },
+      { key = "L", mods = "Control", action = "ClearLogNotice" },
+      { key = "L", mods = "Control", mode = "~Vi", chars = "\f" },
+      { key = "PageUp", mods = "Shift", mode = "~Alt", action = "ScrollPageUp" },
+      { key = "PageDown", mods = "Shift", mode = "~Alt", action = "ScrollPageDown" },
+      { key = "Home", mods = "Shift", mode = "~Alt", action = "ScrollToTop" },
+      { key = "End", mods = "Shift", mode = "~Alt", action = "ScrollToBottom" },
+      { key = "V", mods = "Control|Shift", action = "Paste" },
+      { key = "C", mods = "Control|Shift", action = "Copy" },
+      { key = "F", mods = "Control|Shift", action = "SearchForward" },
+      { key = "B", mods = "Control|Shift", action = "SearchBackward" },
+      { key = "C", mods = "Control|Shift", mode = "Vi", action = "ClearSelection" },
+      { key = "Key0", mods = "Control", action = "ResetFontSize" },
+      ]
+    '';
+  };
+  home.file.".config/btop/btop.conf" = {
+    text = ''
+      color_theme = "matugen"
+    '';
+  };
+  home.file.".config/micro/settings.json" = {
+    text = ''
+      {
+        "colorscheme": "matugen"
+      }
+    '';
   };
 
   # ── MatugenFox (Firefox dynamic theming) ──
