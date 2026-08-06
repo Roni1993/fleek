@@ -334,6 +334,7 @@
       # Ghostty (HM-managed); colors come from the matugen-generated theme
       # (~/.config/ghostty/themes/matugen).
       theme = matugen
+      background-opacity = 0.8
     '';
   };
   # matugen can't create this dir; HM ensures it exists for the theme output
