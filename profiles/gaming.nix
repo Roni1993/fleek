@@ -290,10 +290,6 @@
       [templates.helix]
       input_path = "~/.config/matugen/templates/helix-theme.toml"
       output_path = "~/.config/helix/themes/matugen.toml"
-
-      [templates.starship]
-      input_path = "~/.config/matugen/templates/starship.toml"
-      output_path = "~/.config/starship.toml"
     '';
   };
   home.file.".config/matugen/templates/hyprland-colors.conf" = {
@@ -359,9 +355,6 @@
   };
   home.file.".config/matugen/templates/helix-theme.toml" = {
     source = ./matugen/helix-theme.toml.tmpl;
-  };
-  home.file.".config/matugen/templates/starship.toml" = {
-    source = ./matugen/starship.toml.tmpl;
   };
   # ── App theming wiring (matugen-generated files) ──
   home.file.".config/ghostty/config.ghostty" = {
