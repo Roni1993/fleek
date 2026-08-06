@@ -87,6 +87,12 @@
       env=QT_WAYLAND_DISABLE_WINDOWDECORATION,1
       env=SDL_VIDEODRIVER,wayland
       env=MOZ_ENABLE_WAYLAND,1
+      # NVIDIA VA-API hw decode for the nix Firefox: select the system
+      # libva-nvidia-driver and let the RDD process open /dev/nvidia*.
+      env=LIBVA_DRIVER_NAME,nvidia
+      env=LIBVA_DRIVERS_PATH,/usr/lib/dri
+      env=NVD_BACKEND,direct
+      env=MOZ_DISABLE_RDD_SANDBOX,1
       env=GDK_BACKEND,wayland,x11
 
       exec-once=awww-daemon
