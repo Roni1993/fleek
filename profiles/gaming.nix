@@ -259,6 +259,10 @@
       input_path = "~/.config/matugen/templates/vicinae.toml"
       output_path = "~/.local/share/vicinae/themes/matugen.toml"
       post_hook = "vicinae theme set matugen"
+
+      [templates.firefox_websites]
+      input_path = "~/.config/matugen/templates/firefox_websites.css"
+      output_path = "~/.config/matugen/generated/firefox_websites.css"
     '';
   };
   home.file.".config/matugen/templates/hyprland-colors.conf" = {
@@ -291,6 +295,52 @@
   };
   home.file.".config/matugen/templates/vicinae.toml" = {
     source = ./matugen/vicinae.toml;
+  };
+  home.file.".config/matugen/templates/firefox_websites.css" = {
+    source = ./matugen/firefox_websites.css.tmpl;
+  };
+
+  # ── MatugenFox (Firefox dynamic theming) ──
+  # Live, dynamic webpage theming for Firefox powered by matugen. The extension
+  # (installed from AMO) talks to the vendored native host below, which watches
+  # the matugen-generated firefox_websites.css. See MatugenFox README.
+  home.file.".local/bin/matugenfox_host.py" = {
+    source = ./matugenfox/matugenfox_host.py;
+    executable = true;
+  };
+  home.file.".mozilla/native-messaging-hosts/matugenfox.json" = {
+    text = ''
+      {
+        "name": "matugenfox",
+        "description": "MatugenFox Native Messaging Host",
+        "path": "/home/roni/.local/bin/matugenfox_host.py",
+        "type": "stdio",
+        "allowed_extensions": [
+          "matugenfox@ubaid.com"
+        ]
+      }
+    '';
+  };
+  home.file.".config/matugenfox/config.json" = {
+    text = ''
+      {
+        "ecoMode": true,
+        "colorsPath": "~/.config/matugen/generated/firefox_websites.css",
+        "websitesDir": "~/.config/dusky_sites",
+        "browserThemeEnabled": true,
+        "webThemeEnabled": false
+      }
+    '';
+  };
+  # MatugenFox site-specific themes dir — must exist or the extension warns
+  # "Paths Not Found". Drop per-domain CSS here (github.css etc.).
+  home.file.".config/dusky_sites/README.md" = {
+    text = ''
+      # MatugenFox site-specific themes
+      Place per-site .css files here (e.g. github.css with an
+      `@-moz-document domain("github.com")` rule). The MatugenFox extension
+      injects them using the --mg-* palette variables.
+    '';
   };
 
   # ── Bar ──
