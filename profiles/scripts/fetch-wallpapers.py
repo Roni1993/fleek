@@ -15,7 +15,7 @@ os.makedirs(BASE, exist_ok=True)
 
 
 def get(url: str):
-    req = urllib.request.Request(url, headers={"User-Agent": "curl/8"})
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
     with urllib.request.urlopen(req, timeout=30) as r:
         return json_load(r)
 
@@ -25,6 +25,13 @@ import json
 
 def json_load(r):
     return json.load(r)
+
+
+def download(url: str, fn: str) -> bool:
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=60) as r, open(fn, "wb") as f:
+        f.write(r.read())
+    return True
 
 
 def main() -> int:
@@ -49,7 +56,7 @@ def main() -> int:
             if os.path.exists(fn):
                 continue
             try:
-                urllib.request.urlretrieve(path, fn)
+                download(path, fn)
                 fetched += 1
                 print(f"  {w.get('resolution')} {fn}")
             except Exception as e:
