@@ -276,9 +276,6 @@
       input_path = "~/.config/matugen/templates/hyprlock-colors.conf"
       output_path = "~/.config/hypr/hyprlock-colors.conf"
 
-      [templates.opencode]
-      input_path = "~/.config/matugen/templates/opencode-colors.json"
-      output_path = "~/.config/opencode/themes/matugen.json"
 
       [templates.nvim]
       input_path = "~/.config/matugen/templates/nvim-colors.lua"
@@ -343,9 +340,6 @@
   home.file.".config/matugen/templates/hyprlock-colors.conf" = {
     source = ./matugen/hyprlock-colors.tmpl;
   };
-  home.file.".config/matugen/templates/opencode-colors.json" = {
-    source = ./matugen/opencode-colors.json.tmpl;
-  };
   home.file.".config/matugen/templates/nvim-colors.lua" = {
     source = ./matugen/nvim-colors.lua.tmpl;
   };
@@ -353,9 +347,12 @@
   home.file.".config/ghostty/config.ghostty" = {
     text = ''
       # Ghostty (HM-managed); colors come from the matugen-generated theme
-      # (~/.config/ghostty/themes/matugen).
+      # (~/.config/ghostty/themes/matugen). NOTE: ghostty 1.3 has no auto-reload
+      # on theme change — press ctrl+shift+r (or the default ctrl+shift+,) to
+      # apply colors after a theme switch.
       theme = matugen
       background-opacity = 0.8
+      keybind = ctrl+shift+r=reload_config
     '';
   };
   # matugen can't create this dir; HM ensures it exists for the theme output
@@ -441,21 +438,16 @@
       }
     '';
   };
-  # opencode (this tool): use the matugen-generated native theme
+  # opencode config (HM-managed)
   home.file.".config/opencode/opencode.jsonc" = {
     text = ''
       {
         "$schema": "https://opencode.ai/config.json",
         "plugin": [
           "opencode-chrome-devtools"
-        ],
-        "theme": "matugen"
+        ]
       }
     '';
-  };
-  # matugen can't create this dir; HM ensures it exists for the theme output
-  home.file.".config/opencode/themes/.keep" = {
-    text = "";
   };
   # nvim: minimal config that loads the matugen-generated colorscheme
   home.file.".config/nvim/init.lua" = {
