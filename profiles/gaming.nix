@@ -735,7 +735,9 @@
       # reload in place so active notifications survive
       pkill -USR2 -x .waybar-wrapped 2>/dev/null
       swaync-client -rs 2>/dev/null
-      kitty @ --to unix:/tmp/kitty load-config 2>/dev/null
+      # reload kitty via its auto-discovered control socket (no hardcoded
+      # path: kitty may socket under /tmp/kitty-<pid>)
+      kitty @ load-config 2>/dev/null
     '';
   };
 
