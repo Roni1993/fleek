@@ -179,6 +179,7 @@
       bind=$mod, SPACE, exec, vicinae toggle
       bind=$mod, L, exec, hyprlock
       bind=$mod, T, exec, ~/.local/bin/theme-toggle
+      bind=$mod, W, exec, ~/.local/bin/rotate-wallpaper.sh
 
       bind=, PRINT, exec, hyprshot -m region
       bind=$mod SHIFT, S, exec, hyprshot -m region
