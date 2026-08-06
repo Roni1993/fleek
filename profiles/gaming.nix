@@ -606,7 +606,7 @@
       shell_integration no-rc
       confirm_os_window_close 0
       window_padding_width 8
-      background_opacity 0.95
+      background_opacity 0.8
       cursor_shape beam
       cursor_blink_interval 0.5
       enable_audio_bell no
