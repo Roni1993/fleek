@@ -271,6 +271,18 @@
       [templates.micro]
       input_path = "~/.config/matugen/templates/micro.micro"
       output_path = "~/.config/micro/colorschemes/matugen.micro"
+
+      [templates.hyprlock]
+      input_path = "~/.config/matugen/templates/hyprlock-colors.conf"
+      output_path = "~/.config/hypr/hyprlock-colors.conf"
+
+      [templates.opencode]
+      input_path = "~/.config/matugen/templates/opencode-colors.json"
+      output_path = "~/.config/opencode/themes/matugen.json"
+
+      [templates.nvim]
+      input_path = "~/.config/matugen/templates/nvim-colors.lua"
+      output_path = "~/.config/nvim/matugen.lua"
     '';
   };
   home.file.".config/matugen/templates/hyprland-colors.conf" = {
@@ -327,6 +339,15 @@
   };
   home.file.".config/matugen/templates/micro.micro" = {
     source = ./matugen/micro.micro.tmpl;
+  };
+  home.file.".config/matugen/templates/hyprlock-colors.conf" = {
+    source = ./matugen/hyprlock-colors.tmpl;
+  };
+  home.file.".config/matugen/templates/opencode-colors.json" = {
+    source = ./matugen/opencode-colors.json.tmpl;
+  };
+  home.file.".config/matugen/templates/nvim-colors.lua" = {
+    source = ./matugen/nvim-colors.lua.tmpl;
   };
   # ── App theming wiring (matugen-generated files) ──
   home.file.".config/ghostty/config.ghostty" = {
@@ -418,6 +439,33 @@
       {
         "colorscheme": "matugen"
       }
+    '';
+  };
+  # opencode (this tool): use the matugen-generated native theme
+  home.file.".config/opencode/opencode.jsonc" = {
+    text = ''
+      {
+        "$schema": "https://opencode.ai/config.json",
+        "plugin": [
+          "opencode-chrome-devtools"
+        ],
+        "theme": "matugen"
+      }
+    '';
+  };
+  # matugen can't create this dir; HM ensures it exists for the theme output
+  home.file.".config/opencode/themes/.keep" = {
+    text = "";
+  };
+  # nvim: minimal config that loads the matugen-generated colorscheme
+  home.file.".config/nvim/init.lua" = {
+    text = ''
+      local matugen_file = vim.fn.stdpath("config") .. "/matugen.lua"
+      if vim.fn.filereadable(matugen_file) == 1 then
+        dofile(matugen_file)
+      else
+        vim.cmd("colorscheme habamax")
+      end
     '';
   };
 
@@ -729,6 +777,8 @@
   # nix build (NVIDIA EGL/GBM) isn't pulled in by home-manager.
   home.file.".config/hypr/hyprlock.conf" = {
     text = ''
+      # colors come from matugen (hyprlock-colors.conf, regenerated per theme)
+      source = ~/.config/hypr/hyprlock-colors.conf
       general {
           hide_cursor = true
       }
@@ -743,16 +793,16 @@
           monitor =
           dots_center = true
           fade_on_empty = false
-          font_color = rgb(cba6f7)
-          inner_color = rgb(30, 30, 46)
-          outer_color = rgb(69, 71, 90)
+          font_color = $font_color
+          inner_color = $inner_color
+          outer_color = $outer_color
           outline_thickness = 2
           placeholder_text = Password...
       }
       label {
           monitor =
           text = cmd[update:1000] echo $(date +"%H:%M")
-          color = rgba(205, 214, 244, 1)
+          color = $text_color
           font_size = 90
           font_family = JetBrains Mono Nerd Font
           position = 0, 40
