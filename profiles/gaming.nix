@@ -735,9 +735,19 @@
       # reload in place so active notifications survive
       pkill -USR2 -x .waybar-wrapped 2>/dev/null
       swaync-client -rs 2>/dev/null
-      # reload kitty via its auto-discovered control socket (no hardcoded
-      # path: kitty may socket under /tmp/kitty-<pid>)
-      kitty @ load-config 2>/dev/null
+      # reload kitty by writing the load-config command to its control socket.
+      # (kitty @ requires a controlling tty and fails when exec'd from
+      # Hyprland; the raw control protocol works everywhere.)
+      sock=$(ls -t /tmp/kitty-* 2>/dev/null | head -1)
+      if [ -n "$sock" ]; then
+        python3 - "$sock" <<'PY'
+import socket, sys
+s = socket.socket(socket.AF_UNIX)
+s.connect(sys.argv[1])
+s.sendall(b'{"cmd":"load-config"}\n')
+s.close()
+PY
+      fi
     '';
   };
 
