@@ -738,6 +738,16 @@
     };
     Install = { WantedBy = [ "timers.target" ]; };
   };
+  # Hot-reload Spotify's matugen theme: watches the active theme dir and
+  # live-refreshes the client when color.ini changes on a theme switch.
+  systemd.user.services.spicetify-watch = {
+    Unit = { Description = "spicetify theme hot-reload (matugen)"; };
+    Service = {
+      ExecStart = "/usr/bin/spicetify watch -s";
+      Restart = "on-failure";
+    };
+    Install = { WantedBy = [ "default.target" ]; };
+  };
 
   # ── Bar helpers ──
   # idle-toggle: hypridle runs via exec-once, so pause it with SIGSTOP/CONT
