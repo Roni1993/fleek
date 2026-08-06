@@ -211,6 +211,8 @@ sudo pacman -S --noconfirm --needed ghostty discord mangohud
 section "Gaming tooling (system builds)"
 # gamemode is NOT pulled in by cachyos-gaming-meta; install it explicitly.
 sudo pacman -S --noconfirm --needed gamemode
+# playerctl drives waybar's mpris (now-playing) module.
+sudo pacman -S --noconfirm --needed playerctl
 
 section "Vicinae launcher (AUR — nix Qt build can't init OpenGL on NVIDIA)"
 paru -S --noconfirm vicinae-bin
