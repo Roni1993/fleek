@@ -42,11 +42,14 @@ SLOTS = {
 ADOPT_RANGE = 20
 
 # fallback (canonical-hue) colors stay muted so they don't fight the
-# wallpaper-derived tones; adopted colors keep the wallpaper's own saturation
-SAT_FALLBACK = 0.55
+# wallpaper-derived tones; adopted colors keep the wallpaper's own saturation.
+# Kept below the material palette's accent saturation (~0.6-0.7) so terminal
+# colors read at the same intensity as app chrome (large colour areas feel
+# louder than small accents).
+SAT_FALLBACK = 0.40
 # light mode: backgrounds are bright, so lift saturation to keep colors punchy
 SAT_LIGHT_BOOST = 1.35
-SAT_MAX = 0.92
+SAT_MAX = 0.70
 
 # WCAG targets (AA normal text, bright pops brighter/darker)
 CONTRAST_NORMAL = 4.5
@@ -135,7 +138,7 @@ def slot_hue_sat(clusters: dict, slot: str, mode: str) -> tuple[float, float]:
         rep = sum(p[0] * p[1] for p in top) / sum(p[1] for p in top)
         if hue_dist(rep, nominal) <= ADOPT_RANGE:
             hue = rep
-            sat = min(max(sum(p[1] for p in top) / len(top), 0.5), 0.85)
+            sat = min(max(sum(p[1] for p in top) / len(top), 0.4), 0.58)
         else:
             hue, sat = nominal, SAT_FALLBACK
     else:
