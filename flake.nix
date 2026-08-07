@@ -9,7 +9,9 @@
     home-manager.url = "https://flakehub.com/f/nix-community/home-manager/0.1.tar.gz";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Theming — used by gaming profile
+    # Theming — used by gaming profile.
+    # Kept intentionally but NOT enabled: nix GPU/GL builds abort on NVIDIA, so
+    # theming is the matugen pipeline instead (see profiles/gaming.nix).
     stylix.url = "github:danth/stylix";
     stylix.inputs.nixpkgs.follows = "nixpkgs";
 

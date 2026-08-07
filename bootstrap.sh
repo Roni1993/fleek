@@ -213,9 +213,15 @@ section "Gaming tooling (system builds)"
 sudo pacman -S --noconfirm --needed gamemode
 # playerctl drives waybar's mpris (now-playing) module.
 sudo pacman -S --noconfirm --needed playerctl
+# matugen: theming pipeline (palette.py renders the gaming profile's
+# templates). Must be system — the nix build aborts on NVIDIA.
+sudo pacman -S --noconfirm --needed matugen
 
 section "Vicinae launcher (AUR — nix Qt build can't init OpenGL on NVIDIA)"
 paru -S --noconfirm vicinae-bin
+# spicetify-cli (AUR): Spotify theming, driven by apply-theme.sh via the
+# matugen spicetify template.
+paru -S --noconfirm spicetify-cli
 
 # ── 3b. Remove noctalia (notification daemon) ────────────────────
 # noctalia ships with CachyOS KDE and claims org.freedesktop.Notifications
@@ -546,8 +552,8 @@ echo "  Bootstrap complete!"
 echo ""
 echo "  Next steps:"
 echo "    1. Reboot"
-echo "    2. At SDDM, select 'Hyprland' session"
-echo "    3. Login — waybar, swaync, rofi should start"
+echo "    2. plasmalogin autologin lands in the Hyprland session"
+echo "    3. Login — waybar, swaync, vicinae should start"
 echo "    4. Run protonup-qt to install GE-Proton"
 echo "    5. HDD becomes a games disk later — owned by wayfinder ticket #12"
 echo "==========================================="

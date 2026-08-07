@@ -18,7 +18,7 @@
 - [x] Wallpaper daemon: **awww** (set-wallpaper script drives awww + matugen)
 - [x] Idle manager: **hypridle**
 - [x] Output management: **nwg-displays**
-- [x] Clipboard: **cliphist + wl-clipboard**
+- [x] Clipboard: **vicinae native `clipboard:history`** (Super+V; cliphist was tried then removed as redundant — wl-clipboard stays for CLI)
 - [x] Theming: **matugen** (Material-You palette from wallpaper; Super+T light/dark)
 - [x] Night-light: **not needed** (theme toggle handles light/dark)
 - [x] Terminal: **kitty** (primary) + **ghostty** (secondary)
@@ -138,7 +138,7 @@
 | gamemode | system (pacman) | installed by bootstrap (not in gaming-meta); config via `~/.config/gamemode.ini` |
 | protonup-qt, goverlay, nvtop, gwe, pavucontrol | home-manager | `home.packages` |
 | Fonts (JetBrains Mono NF, Noto) | home-manager | `home.packages` |
-| Stylix theming | home-manager | `stylix.*` (uncomment to enable) |
+| Matugen theming | home-manager | `home.file` matugen config + templates (`gaming.nix` + `profiles/matugen/`); stylix input kept but intentionally disabled |
 | git, ssh, gpg | home-manager | `programs.*` |
 | nushell, starship, atuin, etc. | shared modules | `programs.*` |
 

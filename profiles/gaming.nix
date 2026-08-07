@@ -4,9 +4,10 @@
   # 2 TB NVMe (OS + active games) + 4 TB HDD (game library overflow).
   #
   # CachyOS provides: kernel (BORE scheduler), NVIDIA drivers,
-  # Steam, PipeWire, SDDM, KDE base, gaming-meta package.
-  # This profile provides: Hyprland WM + companion tools, theming
-  # via Stylix, gaming performance tools, and user-level configs.
+  # Steam, PipeWire, plasmalogin, KDE base, gaming-meta package.
+  # This profile provides: Hyprland companion tools, theming via the
+  # matugen pipeline (palette.py + templates), gaming performance
+  # tools, and user-level configs.
   #
   # Apply with: nix run ~/projects/fleek#apply-gaming
   # ─────────────────────────────────────────────────────────────────
@@ -100,15 +101,15 @@
       exec-once=vicinae server
       # waybar + swaync are started by their HM systemd user services (no
       # exec-once — a second launch makes the service fail with "instance
-      # already running" and hit start-limit); re-apply the theme after login
-      # so all
-      # matugen outputs match the persisted mode/wallpaper (kitty etc. read
-      # them fresh at startup).
+      # already running" and hit start-limit). Re-apply the theme after login
+      # so all matugen outputs match the persisted mode/wallpaper (kitty etc.
+      # read them fresh at startup).
       exec-once=sh -c 'sleep 3; ~/.local/bin/apply-theme.sh "$(cat ~/.cache/theme-mode 2>/dev/null || echo dark)"'
       # clipboard history is vicinae-native (Super+V); no cliphist.
       exec-once=/usr/lib/hyprpolkitagent/hyprpolkitagent
-      exec-once=systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
-      exec-once=dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+      # env import happens once, at the top of this file (the
+      # dbus-update-activation-environment exec-once above covers DISPLAY,
+      # WAYLAND_DISPLAY, XDG_* and HYPRLAND_INSTANCE_SIGNATURE).
 
       monitor=,preferred,auto,1
 
@@ -836,6 +837,9 @@
   # Vicinae (system, AUR vicinae-bin) is the launcher — the nix Qt build
   # can't init OpenGL on NVIDIA (same EGL wall as kitty). Config lives at
   # ~/.config/vicinae (managed outside HM for now).
+  # NOTE: vicinae's extension host resolves `node` from PATH, which points at
+  # the nix `nodejs` in home.packages — keep nodejs in the nix profile or
+  # vicinae extensions (e.g. clipboard history) break without an obvious cause.
 
   # ── Lockscreen ──
   # hyprlock is system-provided (pacman); config managed here so the
@@ -927,8 +931,9 @@
       auto_reload_config 1
       allow_remote_control yes
       listen_on unix:/tmp/kitty
-      # matugen-generated chrome (bg/fg/accent) + Gruvbox ANSI written by
-      # theme-toggle; reload with ctrl+shift+F5.
+      # matugen-generated chrome (bg/fg/accent) + wallpaper-derived ANSI
+      # palette (from kitty.toml templates, contrast-solved by palette.py);
+      # reloads automatically via auto_reload_config above.
       include ~/.config/kitty/kitty-colors.conf
     '';
   };
