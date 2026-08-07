@@ -1,6 +1,6 @@
 [colors.primary]
-background = "{{ colors.background.default.hex | auto_lightness: 10 | to_color | saturate: -30.0, "hsl" }}"
-foreground = "{{ colors.on_background.default.hex | to_color | saturate: -30.0, "hsl" }}"
+background = "{{ colors.terminal_background.default.hex | auto_lightness: 10 }}"
+foreground = "{{ colors.terminal_foreground.default.hex }}"
 
 [colors.cursor]
 text = "{{ colors.on_primary.default.hex }}"

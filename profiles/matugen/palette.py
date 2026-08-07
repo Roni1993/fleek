@@ -51,6 +51,11 @@ SAT_FALLBACK = 0.28
 SAT_LIGHT_BOOST = 1.35
 SAT_MAX = 0.55
 
+# Terminal chrome desaturation: 0 = default material tint, 1 = pure grey.
+# Binary-searched with the user; ANSI contrast is unaffected (desaturation
+# preserves lightness).
+TERMINAL_DESAT = 0.0
+
 # WCAG targets (AA normal text, bright pops brighter/darker)
 CONTRAST_NORMAL = 4.5
 CONTRAST_BRIGHT = 6.5
@@ -78,6 +83,15 @@ def hue_dist(a: float, b: float) -> float:
 def hex_from_hsl(h: float, s: float, l: float) -> str:
     r, g, b = colorsys.hls_to_rgb(h / 360, l / 100, s)
     return "#{:02x}{:02x}{:02x}".format(*(round(c * 255) for c in (r, g, b)))
+
+
+def desaturate(hexs: str, factor: float) -> str:
+    """Reduce HSL saturation toward grey by `factor` (0..1), keeping lightness."""
+    hexs = hexs.lstrip("#")
+    r, g, b = int(hexs[0:2], 16) / 255, int(hexs[2:4], 16) / 255, int(hexs[4:6], 16) / 255
+    h, l, s = colorsys.rgb_to_hls(r, g, b)
+    s = max(0.0, s * (1 - factor))
+    return hex_from_hsl(h * 360, s * 100, l * 100)
 
 
 def probe_background(scheme: dict, mode: str) -> str:
@@ -185,6 +199,10 @@ def main() -> int:
         normal, bright = slot_colors(clusters, slot, mode, bg)
         scheme["colors"][slot] = {"default": {"color": normal}}
         scheme["colors"][f"{slot}_bright"] = {"default": {"color": bright}}
+    bg = scheme["colors"]["background"]["default"]["color"]
+    fg = scheme["colors"]["on_background"]["default"]["color"]
+    scheme["colors"]["terminal_background"] = {"default": {"color": desaturate(bg, TERMINAL_DESAT)}}
+    scheme["colors"]["terminal_foreground"] = {"default": {"color": desaturate(fg, TERMINAL_DESAT)}}
     OUT.write_text(json.dumps(scheme))
 
     for cfg in (CONFIG, KITTY):
