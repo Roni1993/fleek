@@ -222,6 +222,9 @@ paru -S --noconfirm vicinae-bin
 # spicetify-cli (AUR): Spotify theming, driven by apply-theme.sh via the
 # matugen spicetify template.
 paru -S --noconfirm spicetify-cli
+# zapzap (AUR): native GTK4 WhatsApp client (no Electron) — picks up the
+# matugen gtk-4.0 css automatically.
+paru -S --noconfirm zapzap
 
 # ── 3b. Remove noctalia (notification daemon) ────────────────────
 # noctalia ships with CachyOS KDE and claims org.freedesktop.Notifications
