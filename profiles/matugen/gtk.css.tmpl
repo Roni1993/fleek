@@ -1,4 +1,7 @@
-/* matugen-generated GTK theme override (gtk-3.0 + gtk-4.0) */
+/* matugen-generated GTK theme override (gtk-3.0 + gtk-4.0)
+   Surface backgrounds are intentionally NOT overridden: GTK/libadwaita owns
+   them so light/dark follows color-scheme correctly without app restarts.
+   Only the palette variables + accent are supplied by matugen. */
 @import 'colors.css';
 
 @define-color bg_color {{ colors.surface.default.hex }};
@@ -30,11 +33,6 @@
 @define-color theme_tooltip_fg_color {{ colors.inverse_on_surface.default.hex }};
 @define-color theme_borders {{ colors.outline.default.hex }};
 
-window, .background { background-color: @bg_color; color: @fg_color; }
-entry, .entry, textview, .textview { background-color: @base_color; color: @text_color; border-color: @borders; }
-button { background-color: @base_color; color: @fg_color; border-color: @borders; }
-button:hover { background-color: {{ colors.surface_container_high.default.hex }}; }
-button:active, button:checked { background-color: @selected_bg_color; color: @selected_fg_color; }
+/* matugen accent tinting (kept minimal so light/dark surfaces stay correct) */
 selection, *:selected { background-color: @selected_bg_color; color: @selected_fg_color; }
-tooltip, .tooltip { background-color: @tooltip_bg_color; color: @tooltip_fg_color; }
-scrollbar slider { background-color: @borders; }
+* { outline-color: @accent_color; }
