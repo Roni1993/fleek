@@ -237,6 +237,14 @@ fi
 
 # ── 4. NVIDIA verification ──────────────────────────────────────
 
+section "Routing core dumps to systemd-coredump"
+# Kernel default (core_pattern=core) drops dumps into the process cwd
+# (e.g. ~/core.* from spotify-launcher). Route them to systemd-coredump
+# (bounded, stored in the journal) so they don't accumulate in $HOME.
+echo "kernel.core_pattern=|/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h" \
+  | sudo tee /etc/sysctl.d/99-core-pattern.conf >/dev/null
+sudo sysctl --system >/dev/null
+
 section "Verifying NVIDIA drivers"
 if command -v nvidia-smi &>/dev/null; then
   nvidia-smi --query-gpu=name,driver_version --format=csv,noheader \
@@ -314,6 +322,13 @@ if ! command -v nix &>/dev/null; then
 else
   echo "Nix already installed: $(nix --version)"
 fi
+
+# nushell is THE shell ("nu everywhere"): login shell + kitty's shell.
+# Needs Nix present (profile path below) and an /etc/shells entry.
+if ! grep -q ".nix-profile/bin/nu" /etc/shells; then
+  echo "/home/roni/.nix-profile/bin/nu" | sudo tee -a /etc/shells >/dev/null
+fi
+sudo chsh -s /home/roni/.nix-profile/bin/nu roni
 
 # ── 7. Nix flakes ────────────────────────────────────────────────
 

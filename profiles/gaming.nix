@@ -190,6 +190,7 @@
       bind=, PRINT, exec, hyprshot -m region
       bind=$mod SHIFT, S, exec, hyprshot -m region
       bind=$mod, PRINT, exec, hyprshot -m output
+      bind=$mod, N, exec, swaync-client -t
 
       # clipboard history (Super+V → vicinae clipboard:history) bind lives
       # in matugen/hyprland-colors.tmpl (sourced by hyprland.conf) so it also
@@ -264,6 +265,14 @@
       [templates.swaync]
       input_path = "~/.config/matugen/templates/swaync-style.css"
       output_path = "~/.config/swaync/style.css"
+
+      [templates.gtk3]
+      input_path = "~/.config/matugen/templates/gtk.css"
+      output_path = "~/.config/gtk-3.0/gtk.css"
+
+      [templates.gtk4]
+      input_path = "~/.config/matugen/templates/gtk.css"
+      output_path = "~/.config/gtk-4.0/gtk.css"
 
       [templates.vicinae]
       input_path = "~/.config/matugen/templates/vicinae.toml"
@@ -351,6 +360,9 @@
   };
   home.file.".config/matugen/templates/swaync-style.css" = {
     source = ./matugen/swaync-style.css.tmpl;
+  };
+  home.file.".config/matugen/templates/gtk.css" = {
+    source = ./matugen/gtk.css.tmpl;
   };
   home.file.".config/matugen/templates/vicinae.toml" = {
     source = ./matugen/vicinae.toml;
