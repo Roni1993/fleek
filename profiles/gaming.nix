@@ -177,7 +177,7 @@
       bind=$mod, RETURN, exec, kitty
       bind=$mod, Q, killactive
       bind=$mod, M, exit
-      bind=$mod, E, exec, dolphin
+      bind=$mod, E, exec, nautilus
       bind=$mod, F, fullscreen
       bind=$mod SHIFT, SPACE, togglefloating
       bind=$mod, R, exec, vicinae toggle

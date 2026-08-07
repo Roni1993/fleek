@@ -216,6 +216,8 @@ sudo pacman -S --noconfirm --needed playerctl
 # matugen: theming pipeline (palette.py renders the gaming profile's
 # templates). Must be system — the nix build aborts on NVIDIA.
 sudo pacman -S --noconfirm --needed matugen
+# nautilus: GTK4 file manager (Super+E). Follows the matugen gtk-4.0 css.
+sudo pacman -S --noconfirm --needed nautilus
 
 section "Vicinae launcher (AUR — nix Qt build can't init OpenGL on NVIDIA)"
 paru -S --noconfirm vicinae-bin
