@@ -2,3 +2,7 @@ result
 profiles/wallpaper.png
 # core dumps
 core.*
+
+# python
+__pycache__/
+*.pyc
