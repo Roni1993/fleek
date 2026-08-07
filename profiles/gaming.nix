@@ -96,17 +96,16 @@
       env=GDK_BACKEND,wayland,x11
 
       exec-once=awww-daemon
-      exec-once=swaync
       exec-once=hypridle
       exec-once=vicinae server
-      # waybar is started by its HM systemd user service (no exec-once, which
-      # would spawn a second bar); re-apply the theme after login so all
+      # waybar + swaync are started by their HM systemd user services (no
+      # exec-once — a second launch makes the service fail with "instance
+      # already running" and hit start-limit); re-apply the theme after login
+      # so all
       # matugen outputs match the persisted mode/wallpaper (kitty etc. read
       # them fresh at startup).
       exec-once=sh -c 'sleep 3; ~/.local/bin/apply-theme.sh "$(cat ~/.cache/theme-mode 2>/dev/null || echo dark)"'
-      # graphical-session.target never activates under system Hyprland
-      # (RefuseManualStart), so start HM's graphical-session services directly.
-      exec-once=systemctl --user start cliphist.service
+      # clipboard history is vicinae-native (Super+V); no cliphist.
       exec-once=/usr/lib/hyprpolkitagent/hyprpolkitagent
       exec-once=systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
       exec-once=dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
@@ -179,7 +178,7 @@
       bind=$mod, M, exit
       bind=$mod, E, exec, dolphin
       bind=$mod, F, fullscreen
-      bind=$mod, V, togglefloating
+      bind=$mod SHIFT, SPACE, togglefloating
       bind=$mod, R, exec, vicinae toggle
       bind=$mod, P, pseudo
       bind=$mod, SPACE, exec, vicinae toggle
@@ -190,6 +189,10 @@
       bind=, PRINT, exec, hyprshot -m region
       bind=$mod SHIFT, S, exec, hyprshot -m region
       bind=$mod, PRINT, exec, hyprshot -m output
+
+      # clipboard history (Super+V → vicinae clipboard:history) bind lives
+      # in matugen/hyprland-colors.tmpl (sourced by hyprland.conf) so it also
+      # works pre-rebuild and survives reloads.
 
       bind=$mod, 1, workspace, 1
       bind=$mod, 2, workspace, 2
@@ -887,12 +890,8 @@
     '';
   };
 
-  # ── Clipboard ──
-  services.cliphist = {
-    enable = true;
-    systemdTargets = [ "graphical-session.target" ];
-    allowImages = true;
-  };
+  # Clipboard history is vicinae-native (clipboard:history, Super+V);
+  # no separate cliphist service.
 
   # ── Terminal — kitty (primary) ──
   # Using system kitty (pacman) instead of nix kitty — nix kitty's bundled
