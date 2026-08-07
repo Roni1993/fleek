@@ -25,6 +25,18 @@ src="/usr/share/icons/$base"
 dst="$HOME/.local/share/icons/$theme"
 mapfile -t sizes < <(ls "$src" | grep -E '^[0-9]')
 
+# skip the rebuild if mode+primary are unchanged and the theme exists (speeds
+# up re-applies like login or a toggle that doesn't change the palette)
+state_file="$HOME/.cache/matugen/icon-theme-state"
+if [ -d "$dst" ] && [ -f "$state_file" ]; then
+  read -r last_mode last_primary < "$state_file"
+  if [ "$last_mode" = "$mode" ] && [ "$last_primary" = "$primary" ]; then
+    gsettings set org.gnome.desktop.interface icon-theme "$theme"
+    echo "icon theme unchanged ($theme) — skip rebuild"
+    exit 0
+  fi
+fi
+
 # drop stale matugen icon themes from previous primaries
 for old in "$HOME"/.local/share/icons/Papirus-Matugen*; do
   [ -d "$old" ] && [ "$old" != "$dst" ] && rm -rf "$old"
@@ -63,4 +75,5 @@ done
 
 gsettings set org.gnome.desktop.interface icon-theme "$theme"
 gtk-update-icon-cache -f "$dst" >/dev/null 2>&1 || true
+echo "$mode $primary" > "$state_file"
 echo "icon theme -> $theme (folder #$primary, ${#sizes[@]} sizes)"
