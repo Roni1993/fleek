@@ -13,15 +13,22 @@ darker=$(python3 -c "
 h = '$primary'
 print(''.join(f'{int(c * 0.78):02x}' for c in (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))))")
 
+# Theme name includes the primary so GTK sees a *change* and reloads icons in
+# running apps (a stable name would keep the old cached SVG on color switches).
 if [ "$mode" = light ]; then
-  base=Papirus-Light; theme=Papirus-Matugen-Light
+  base=Papirus-Light; theme="Papirus-Matugen-L-$primary"
 else
-  base=Papirus-Dark; theme=Papirus-Matugen
+  base=Papirus-Dark; theme="Papirus-Matugen-$primary"
 fi
 
 src="/usr/share/icons/$base"
 dst="$HOME/.local/share/icons/$theme"
 mapfile -t sizes < <(ls "$src" | grep -E '^[0-9]')
+
+# drop stale matugen icon themes from previous primaries
+for old in "$HOME"/.local/share/icons/Papirus-Matugen*; do
+  [ -d "$old" ] && [ "$old" != "$dst" ] && rm -rf "$old"
+done
 
 rm -rf "$dst"
 mkdir -p "$dst"
