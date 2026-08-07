@@ -21,23 +21,26 @@ fi
 
 src="/usr/share/icons/$base"
 dst="$HOME/.local/share/icons/$theme"
-sizes=(22x22 24x24 32x32 48x48 64x64)
+mapfile -t sizes < <(ls "$src" | grep -E '^[0-9]')
 
 rm -rf "$dst"
 mkdir -p "$dst"
 
+dirs=$(printf '%s/places,' "${sizes[@]}" | sed 's/,$//')
 cat > "$dst/index.theme" <<EOF
 [Icon Theme]
 Name=$theme
 Comment=Matugen-tinted Papirus folder icons
 Inherits=$base
-Directories=$(IFS=,; echo "${sizes[*]//\//\/places}")
+Directories=$dirs
 EOF
 for size in "${sizes[@]}"; do
+  scale=1
+  [[ "$size" == *@2x ]] && scale=2
   echo ""
   echo "[$size/places]"
   echo "Size=${size%%x*}"
-  echo "Type=Scalable"
+  echo "Scale=$scale"
 done >> "$dst/index.theme"
 
 for size in "${sizes[@]}"; do
@@ -53,4 +56,4 @@ done
 
 gsettings set org.gnome.desktop.interface icon-theme "$theme"
 gtk-update-icon-cache -f "$dst" >/dev/null 2>&1 || true
-echo "icon theme -> $theme (folder #$primary)"
+echo "icon theme -> $theme (folder #$primary, ${#sizes[@]} sizes)"
