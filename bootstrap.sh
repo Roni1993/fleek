@@ -218,6 +218,9 @@ sudo pacman -S --noconfirm --needed playerctl
 sudo pacman -S --noconfirm --needed matugen
 # nautilus: GTK4 file manager (Super+E). Follows the matugen gtk-4.0 css.
 sudo pacman -S --noconfirm --needed nautilus
+# papirus-icon-theme: base for the matugen-tinted folder icons
+# (apply-icons.sh builds a Papirus-Matugen overlay from it).
+sudo pacman -S --noconfirm --needed papirus-icon-theme
 
 section "Vicinae launcher (AUR — nix Qt build can't init OpenGL on NVIDIA)"
 paru -S --noconfirm vicinae-bin

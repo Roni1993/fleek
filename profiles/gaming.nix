@@ -1017,6 +1017,12 @@
   # spotify/vesktop/steam). Runtime configs are matugen-owned and regenerated
   # from the templates in ./matugen/. This block is intentionally not enabled.
 
+  # ── Icon theme (Papirus tinted to the matugen primary) ──
+  home.file.".local/bin/apply-icons.sh" = {
+    source = ./scripts/apply-icons.sh;
+    executable = true;
+  };
+
   # ── Theme apply helper ──
   # Regenerates the matugen palette for the given mode + wallpaper and reloads
   # every themed surface in place. Used by theme-toggle, set-wallpaper and the
@@ -1035,6 +1041,8 @@
         fi
       fi
       python3 "$HOME/.config/matugen/palette.py" "$wallpaper" "$mode" || exit 1
+      # tint the Papirus icon theme folders to the current matugen primary
+      "$HOME/.local/bin/apply-icons.sh" "$mode"
       hyprctl reload
       # reload in place so active notifications survive
       pkill -USR2 -x .waybar-wrapped 2>/dev/null
