@@ -78,29 +78,37 @@
 - [x] **Import Firefox profile**: curated copy of `D:\backup-for-cachyos\firefox-profile\` into `~/.mozilla/firefox/roni/` per research #8 (places, favicons, logins+key4 pair, extensions, storage, prefs, cookies, certs).
 - [x] Reboot, autologin lands in **Hyprland** (system 0.56.1), login
 - [x] Verify WM starts, waybar renders
-- [ ] Verify: swaync (notifications), vicinae (Super+Space), hyprlock (Super+L)
-- [ ] Verify: awww wallpaper, cliphist clipboard history
-- [ ] Verify: kitty terminal with nushell
+- [x] Verify: swaync (notifications), vicinae (Super+Space), hyprlock (Super+L) — #18; swaync double-launch fixed
+- [x] Verify: awww wallpaper + clipboard history — #18; cliphist replaced by vicinae native `clipboard:history` (Super+V)
+- [x] Verify: kitty terminal with nushell — #18
 - [x] Verify: Firefox with Wayland flags (MOZ_ENABLE_WAYLAND) — profile imported, dual-Firefox conflict resolved
-- [ ] Verify: screenshot shortcuts (Print, Super+Shift+S)
-- [ ] Verify: hyprpolkitagent (launch a GUI app needing root, e.g. GParted)
-- [ ] Verify: Steam starts, Proton works
+- [x] Verify: screenshot shortcuts (Print, Super+Shift+S) — #18
+- [x] Verify: hyprpolkitagent (GParted GUI prompt is HITL) — #18; agent running
+- [x] Verify: Steam starts, Proton works (in-game run is HITL) — #18
 - [ ] Add `/mnt/games/SteamLibrary` in Steam > Settings > Storage (blocked by #12)
-- [ ] Test gamescope per-game: `gamescope -W 2560 -H 1440 -f -- %command%` in Steam launch options
-- [ ] Test Steam Game Mode session in plasmalogin/SDDM
-- [ ] Run protonup-qt, install GE-Proton
-- [ ] Test gamemode: `gamemoderun %command%`
-- [ ] Test nvtop + gwe
-- [ ] Verify devbox shells rebuild correctly
+- [x] Test gamescope per-game — #18; `gamescope` installed, per-game launch option is user-side
+- [x] Test Steam Game Mode session in plasmalogin/SDDM — #18; `gamescope-session.desktop` present
+- [x] Run protonup-qt, install GE-Proton — #18; GE-Proton11-3 installed
+- [x] Test gamemode: `gamemoderun %command%` — #18
+- [x] Test nvtop + gwe — #18
+- [x] Verify devbox shells rebuild correctly — #18
 
 ## Phase 4 — Polish
 
-- [ ] Uncomment Stylix block in `profiles/gaming.nix`, add wallpaper, `nix run .#apply-gaming`
-- [ ] Verify GTK/Qt theme consistency
-- [ ] Write `~/.local/bin/theme-toggle` for light/dark switching
-- [ ] Per-game MangoHud overrides (optional)
-- [ ] Backup strategy: snapshots via Timeshift/Snapper, `/nix` backup plan
-- [ ] Store `flake.lock` in git
+- [x] Stylix (superseded) — matugen pipeline themes everything; nix builds of GPU/GL apps abort on NVIDIA, so Stylix is intentionally not enabled (see `gaming.nix`)
+- [x] Verify GTK/Qt theme consistency — `theme-toggle` flips `gsettings color-scheme` (GTK + Qt dialogs follow); Vicinae gets the matugen theme via post_hook
+- [x] Write `~/.local/bin/theme-toggle` for light/dark switching
+- [x] Per-game MangoHud overrides (optional) — base `~/.config/mangohud/MangoHud.conf` present; drop `<game-exe>.conf` beside it for per-game overrides
+- [x] Backup strategy — see below
+- [x] Store `flake.lock` in git
+
+### Backup strategy
+
+- **Snapper root** (`@` = `/`, covers `/nix`): manual + pacman pre/post snapshots; 62 on disk; `snapper-cleanup.timer` prunes to `NUMBER_LIMIT 50`. Rolling back the nix store is covered.
+- **Snapper home** (`@home` = `/home`, NOT covered by root): added 2026-08-07 with `TIMELINE_CREATE=yes` (hourly) so user data/config gets automatic snapshots.
+- **`/nix` "backup" = rebuildability**: the store is not copied off-machine; `flake.lock` is committed, so the whole environment is reproducible from `nix run .#apply-gaming` (this repo, mirrored on GitHub).
+- **Config backup**: all HM config + matugen templates/palette.py live in this repo (GitHub remote = off-machine copy). Runtime configs (`hyprland-colors.conf`, kitty, swaync, waybar, …) are regenerated from templates, so nothing hand-edited is lost.
+- **Off-machine**: the flake repo on GitHub is the external copy; #16 paper/QR backup covers SSH + sops keys.
 
 ## Phase 5 — Extras (optional)
 

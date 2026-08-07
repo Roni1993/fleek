@@ -977,42 +977,13 @@
     '';
   };
 
-  # ── Stylix theming ──
-  # Stylix module is wired in flake.nix. Uncomment this block and
-  # drop a wallpaper.png in ./profiles/ to enable system-wide theming.
-  # stylix = {
-  #   enable = true;
-  #   base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
-  #   image = ./wallpaper.png;
-  #   polarity = "dark";
-  #   cursor = {
-  #     package = pkgs.bibata-cursors;
-  #     name = "Bibata-Modern-Classic";
-  #     size = 24;
-  #   };
-  #   fonts = {
-  #     monospace = {
-  #       package = pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; };
-  #       name = "JetBrainsMono Nerd Font";
-  #     };
-  #     sansSerif = {
-  #       package = pkgs.noto-fonts;
-  #       name = "Noto Sans";
-  #     };
-  #     serif = {
-  #       package = pkgs.noto-fonts;
-  #       name = "Noto Serif";
-  #     };
-  #   };
-  #   targets = {
-  #     waybar.enable = true;
-  #     hyprland.enable = true;
-  #     hyprlock.enable = true;
-  #     rofi.enable = true;
-  #     kitty.enable = true;
-  #     gtk.enable = true;
-  #   };
-  # };
+  # ── Theming decision (was: Stylix) ──
+  # System-wide theming is NOT Stylix: nix builds of GPU/GL apps abort on the
+  # NVIDIA stack, so Hyprland/kitty/ghostty are system (pacman) builds and
+  # theming is done by the matugen pipeline below (palette.py + templates:
+  # hyprland/waybar/swaync/kitty/ghostty/btop/micro/nvim/helix/firefox/zed/
+  # spotify/vesktop/steam). Runtime configs are matugen-owned and regenerated
+  # from the templates in ./matugen/. This block is intentionally not enabled.
 
   # ── Theme apply helper ──
   # Regenerates the matugen palette for the given mode + wallpaper and reloads
