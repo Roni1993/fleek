@@ -496,7 +496,19 @@
         "$schema": "https://opencode.ai/config.json",
         "plugin": [
           "opencode-chrome-devtools"
-        ]
+        ],
+        "agent": {
+          "frontier": {
+            "mode": "subagent",
+            "model": "opencode-go/kimi-k3",
+            "description": "Deep-review and cleanup agent for the CachyOS+Nix setup (runs on Kimi K3). Use for sanity checks, cleanup, and improvement investigations.",
+            "permission": {
+              "edit": "allow",
+              "bash": "allow"
+            },
+            "prompt": "You are 'frontier', a deep-review and cleanup agent for this CachyOS + Nix hybrid setup. Investigate the environment and repo, find issues and improvement opportunities, apply only safe/trivial fixes, and report findings clearly. The specific task and scope are given when you are invoked."
+          }
+        }
       }
     '';
   };
