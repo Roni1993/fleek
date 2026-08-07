@@ -51,10 +51,11 @@ SAT_FALLBACK = 0.28
 SAT_LIGHT_BOOST = 1.35
 SAT_MAX = 0.55
 
-# Terminal chrome desaturation: 0 = default material tint, 1 = pure grey.
-# Binary-searched with the user; ANSI contrast is unaffected (desaturation
-# preserves lightness).
-TERMINAL_DESAT = 0.0
+# Terminal chrome saturation cap (absolute, 0..1): bg/fg saturation is clamped
+# to this, so the terminal looks the same regardless of how saturated the
+# wallpaper's material background is. Binary-searched with the user; ANSI
+# contrast is unaffected (clamping keeps lightness).
+TERMINAL_BG_SAT = 0.10
 
 # WCAG targets (AA normal text, bright pops brighter/darker)
 CONTRAST_NORMAL = 4.5
@@ -85,12 +86,12 @@ def hex_from_hsl(h: float, s: float, l: float) -> str:
     return "#{:02x}{:02x}{:02x}".format(*(round(c * 255) for c in (r, g, b)))
 
 
-def desaturate(hexs: str, factor: float) -> str:
-    """Reduce HSL saturation toward grey by `factor` (0..1), keeping lightness."""
+def clamp_sat(hexs: str, cap: float) -> str:
+    """Clamp HSL saturation to `cap` (0..1), keeping lightness and hue."""
     hexs = hexs.lstrip("#")
     r, g, b = int(hexs[0:2], 16) / 255, int(hexs[2:4], 16) / 255, int(hexs[4:6], 16) / 255
     h, l, s = colorsys.rgb_to_hls(r, g, b)
-    s = max(0.0, s * (1 - factor))
+    s = min(s, cap)
     return hex_from_hsl(h * 360, s, l * 100)
 
 
@@ -201,8 +202,8 @@ def main() -> int:
         scheme["colors"][f"{slot}_bright"] = {"default": {"color": bright}}
     bg = scheme["colors"]["background"]["default"]["color"]
     fg = scheme["colors"]["on_background"]["default"]["color"]
-    scheme["colors"]["terminal_background"] = {"default": {"color": desaturate(bg, TERMINAL_DESAT)}}
-    scheme["colors"]["terminal_foreground"] = {"default": {"color": desaturate(fg, TERMINAL_DESAT)}}
+    scheme["colors"]["terminal_background"] = {"default": {"color": clamp_sat(bg, TERMINAL_BG_SAT)}}
+    scheme["colors"]["terminal_foreground"] = {"default": {"color": clamp_sat(fg, TERMINAL_BG_SAT)}}
     OUT.write_text(json.dumps(scheme))
 
     for cfg in (CONFIG, KITTY):
