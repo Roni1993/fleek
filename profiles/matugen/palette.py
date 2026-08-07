@@ -91,7 +91,7 @@ def desaturate(hexs: str, factor: float) -> str:
     r, g, b = int(hexs[0:2], 16) / 255, int(hexs[2:4], 16) / 255, int(hexs[4:6], 16) / 255
     h, l, s = colorsys.rgb_to_hls(r, g, b)
     s = max(0.0, s * (1 - factor))
-    return hex_from_hsl(h * 360, s * 100, l * 100)
+    return hex_from_hsl(h * 360, s, l * 100)
 
 
 def probe_background(scheme: dict, mode: str) -> str:
