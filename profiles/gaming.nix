@@ -491,6 +491,9 @@
     '';
   };
   # opencode config (HM-managed)
+  # NOTE: the opencode-chrome-devtools plugin drives browser_* tools via its
+  # companion binary ~/.local/bin/ocx (v2, manual install, unmanaged on purpose
+  # — matches the pinned HM opencode version's plugin expectations).
   home.file.".config/opencode/opencode.jsonc" = {
     text = ''
       {
