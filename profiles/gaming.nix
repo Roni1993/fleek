@@ -771,6 +771,32 @@
   };
 
   # ── Bar helpers ──
+  # opencode wrapper: pauses hypridle (SIGSTOP, same trick as idle-toggle.sh)
+  # for the whole opencode lifetime so long-running agents never trip the
+  # dpms-off / hyprlock / suspend listeners. .local/bin precedes the nix
+  # profile in PATH, so this shadows the real opencode binary.
+  # Only pauses when launching an interactive session (no non-TTY flags like
+  # --version / run / serve) — headless invocations must not hold idle.
+  home.file.".local/bin/opencode" = {
+    executable = true;
+    text = ''
+      #!/usr/bin/env bash
+      real=$(readlink -f /home/roni/.nix-profile/bin/opencode)
+      [ -x "$real" ] || real=$(command -v opencode 2>/dev/null)
+      pause=0
+      case "$1" in
+        ""|-v|--version|-h|--help) pause=0 ;;
+        run|serve|agent|auth|debug) pause=0 ;;
+        *) [ -t 0 ] && [ -t 1 ] && pause=1 ;;
+      esac
+      if [ "$pause" = 1 ]; then
+        pids=$(pgrep -x hypridle)
+        [ -n "$pids" ] && kill -STOP $pids
+        trap '[ -n "$pids" ] && kill -CONT $pids' EXIT
+      fi
+      exec "$real" "$@"
+    '';
+  };
   # idle-toggle: hypridle runs via exec-once, so pause it with SIGSTOP/CONT
   home.file.".local/bin/idle-toggle.sh" = {
     executable = true;
