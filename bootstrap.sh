@@ -98,7 +98,11 @@ phase3_restore() {
       mkdir -p "$BK_DIR"
       # Curated list per wayfinder #8. logins.json+key4.db travel as a pair.
       # user.js/.keep/containers.json stay HM-managed and are NOT copied.
-      for f in places.sqlite favicons.sqlite logins.json key4.db \
+      # Gotcha (2026-08-08): places.sqlite/favicons.sqlite are WAL-mode SQLite —
+      # a raw cp produces a corrupt DB (Firefox silently stops storing history).
+      # They must be snapshotted with `sqlite3 .backup`, which yields a
+      # consistent image. Everything else is a plain file/dir copy.
+      for f in logins.json key4.db \
                permissions.sqlite cert9.db formhistory.sqlite cookies.sqlite \
                prefs.js search.json.mozlz4 handlers.json \
                extensions extensions.json browser-extension-data \
@@ -107,6 +111,18 @@ phase3_restore() {
           [ -e "$FF_DST/$f" ] && cp -a "$FF_DST/$f" "$BK_DIR/"
           cp -a "$FF_SRC/$f" "$FF_DST/"
           echo "    restored: $f"
+        fi
+      done
+      for f in places.sqlite favicons.sqlite; do
+        if [ -e "$FF_SRC/$f" ]; then
+          [ -e "$FF_DST/$f" ] && cp -a "$FF_DST/$f" "$BK_DIR/"
+          if command -v sqlite3 &>/dev/null; then
+            sqlite3 "$FF_SRC/$f" ".backup '$FF_DST/$f'" && \
+            rm -f "$FF_DST/$f-wal" "$FF_DST/$f-shm" || warn "  $f snapshot FAILED"
+            echo "    restored: $f (sqlite .backup snapshot)"
+          else
+            warn "  sqlite3 missing — $f would import corrupt; skipping."
+          fi
         fi
       done
       chmod -R u+rwX "$FF_DST"

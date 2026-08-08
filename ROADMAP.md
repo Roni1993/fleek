@@ -75,7 +75,7 @@
 ## Phase 3 — Verification
 
 - [x] **Restore WSL keys from HDD**: `wsl-keys/keys.txt` → `~/.config/sops/age/keys.txt`, SSH keypair → `~/.ssh/` (id_ed25519 + .pub), perms 600. Note: old key is removed from GitHub — rotation pending.
-- [x] **Import Firefox profile**: curated copy of `D:\backup-for-cachyos\firefox-profile\` into `~/.mozilla/firefox/roni/` per research #8 (places, favicons, logins+key4 pair, extensions, storage, prefs, cookies, certs).
+- [x] **Import Firefox profile**: curated copy of `D:\backup-for-cachyos\firefox-profile\` into `~/.mozilla/firefox/roni/` per research #8 (places, favicons, logins+key4 pair, extensions, storage, prefs, cookies, certs). **Gotcha (fixed 2026-08-08)**: the raw `cp` of `places.sqlite` while its WAL/SHM were present produced a corrupt DB — Firefox silently stopped storing history. Correct procedure: with Firefox **closed**, copy the SQLite files via `sqlite3 src.db ".backup 'dest.db'"` (consistent snapshot) and delete the destination's `places.sqlite-wal`/`-shm`/`favicons.sqlite-wal`/`-shm`. Verified: 17,565 visits restored, `PRAGMA integrity_check` = ok.
 - [x] Reboot, autologin lands in **Hyprland** (system 0.56.1), login
 - [x] Verify WM starts, waybar renders
 - [x] Verify: swaync (notifications), vicinae (Super+Space), hyprlock (Super+L) — #18; swaync double-launch fixed
