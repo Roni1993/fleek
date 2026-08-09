@@ -771,31 +771,78 @@
   };
 
   # ── Bar helpers ──
-  # opencode wrapper: pauses hypridle (SIGSTOP, same trick as idle-toggle.sh)
-  # for the whole opencode lifetime so long-running agents never trip the
-  # dpms-off / hyprlock / suspend listeners. .local/bin precedes the nix
-  # profile in PATH, so this shadows the real opencode binary.
-  # Only pauses when launching an interactive session (no non-TTY flags like
-  # --version / run / serve) — headless invocations must not hold idle.
-  home.file.".local/bin/opencode" = {
+  # opencode idle guard: holds a DBus ScreenSaver inhibitor on hypridle
+  # (org.freedesktop.ScreenSaver.Inhibit) while any opencode process is
+  # alive. hypridle's ignore_dbus_inhibit=false makes it skip the dpms-off/
+  # hyprlock/suspend listeners while inhibited, so long-running agents never
+  # freeze the machine. Connection-tied: the inhibitor auto-releases if the
+  # guard (or opencode) dies. Works regardless of how opencode was launched.
+  home.file.".local/bin/opencode-idle-guard.py" = {
     executable = true;
     text = ''
-      #!/usr/bin/env bash
-      real=$(readlink -f /home/roni/.nix-profile/bin/opencode)
-      [ -x "$real" ] || real=$(command -v opencode 2>/dev/null)
-      pause=0
-      case "$1" in
-        ""|-v|--version|-h|--help) pause=0 ;;
-        run|serve|agent|auth|debug) pause=0 ;;
-        *) [ -t 0 ] && [ -t 1 ] && pause=1 ;;
-      esac
-      if [ "$pause" = 1 ]; then
-        pids=$(pgrep -x hypridle)
-        [ -n "$pids" ] && kill -STOP $pids
-        trap '[ -n "$pids" ] && kill -CONT $pids' EXIT
-      fi
-      exec "$real" "$@"
+      #!/usr/bin/env python3
+      import subprocess
+      import gi
+      gi.require_version("Gio", "2.0")
+      from gi.repository import Gio, GLib
+
+      DEST = "org.freedesktop.ScreenSaver"
+      PATH = "/org/freedesktop/ScreenSaver"
+      IFACE = "org.freedesktop.ScreenSaver"
+
+      conn = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+
+      def opencode_running():
+          try:
+              return subprocess.run(
+                  ["pgrep", "-x", "opencode"], capture_output=True
+              ).returncode == 0
+          except Exception:
+              return False
+
+      cookie = None
+
+      def tick():
+          global cookie
+          try:
+              if opencode_running():
+                  if cookie is None:
+                      res = conn.call_sync(
+                          DEST, PATH, IFACE, "Inhibit",
+                          GLib.Variant("(ss)", ("opencode-idle-guard", "opencode agent active")),
+                          GLib.VariantType("(u)"),
+                          Gio.DBusCallFlags.NONE, -1, None,
+                      )
+                      cookie = res.unpack()[0]
+              else:
+                  if cookie is not None:
+                      conn.call_sync(
+                          DEST, PATH, IFACE, "UnInhibit",
+                          GLib.Variant("(u)", (cookie,)),
+                          None, Gio.DBusCallFlags.NONE, -1, None,
+                      )
+                      cookie = None
+          except Exception as e:
+              print(f"guard error: {e}", flush=True)
+              cookie = None
+          return True
+
+      GLib.timeout_add_seconds(5, tick)
+      tick()
+      GLib.MainLoop().run()
     '';
+  };
+  systemd.user.services.opencode-idle-guard = {
+    Unit = {
+      Description = "Hold idle inhibitor while opencode is running";
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "%h/.local/bin/opencode-idle-guard.py";
+      Restart = "on-failure";
+    };
+    Install = { WantedBy = [ "graphical-session.target" ]; };
   };
   # idle-toggle: hypridle runs via exec-once, so pause it with SIGSTOP/CONT
   home.file.".local/bin/idle-toggle.sh" = {
