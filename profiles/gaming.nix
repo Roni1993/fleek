@@ -528,6 +528,49 @@
       }
     '';
   };
+  # idle-guard plugin: signals real agent activity to opencode-idle-guard.
+  # Touches ~/.cache/opencode/active on tool exec / message stream; removes it
+  # on session.idle. The guard holds the hypridle inhibitor only while this
+  # marker is fresh — so an idle-but-open TUI does NOT block the lockscreen.
+  home.file.".config/opencode/plugins/idle-guard.ts" = {
+    text = ''
+      import * as fs from "node:fs/promises"
+      import * as path from "node:path"
+      import * as os from "node:os"
+      import type { Plugin } from "@opencode-ai/plugin"
+      import type { Event } from "@opencode-ai/sdk"
+
+      const MARKER = path.join(os.homedir(), ".cache/opencode/active")
+
+      async function markActive() {
+        try {
+          await fs.mkdir(path.dirname(MARKER), { recursive: true })
+          await fs.writeFile(MARKER, String(Date.now()))
+        } catch {}
+      }
+      async function clearActive() {
+        try {
+          await fs.rm(MARKER, { force: true })
+        } catch {}
+      }
+
+      export const IdleGuardPlugin: Plugin = async () => {
+        return {
+          "tool.execute.before": async () => {
+            await markActive()
+          },
+          event: async ({ event }: { event: Event }) => {
+            const e = event as { type: string }
+            if (e.type === "message.part.updated") {
+              await markActive()
+            } else if (e.type === "session.idle") {
+              await clearActive()
+            }
+          },
+        }
+      }
+    '';
+  };
   # nvim: minimal config that loads the matugen-generated colorscheme
   home.file.".config/nvim/init.lua" = {
     text = ''
@@ -772,16 +815,18 @@
 
   # ── Bar helpers ──
   # opencode idle guard: holds a DBus ScreenSaver inhibitor on hypridle
-  # (org.freedesktop.ScreenSaver.Inhibit) while any opencode process is
-  # alive. hypridle's ignore_dbus_inhibit=false makes it skip the dpms-off/
-  # hyprlock/suspend listeners while inhibited, so long-running agents never
-  # freeze the machine. Connection-tied: the inhibitor auto-releases if the
-  # guard (or opencode) dies. Works regardless of how opencode was launched.
+  # (org.freedesktop.ScreenSaver.Inhibit) while an opencode agent is actually
+  # working. Activity is signaled by the idle-guard opencode plugin, which
+  # touches ~/.cache/opencode/active on tool exec / message streaming and
+  # removes it on session.idle. The inhibitor is held only while that marker
+  # is fresh (< 60s) — an idle-but-open TUI does NOT block the lockscreen.
+  # Connection-tied: the inhibitor auto-releases if the guard dies.
   home.file.".local/bin/opencode-idle-guard.py" = {
     executable = true;
     text = ''
       #!/usr/bin/env python3
-      import subprocess
+      import os
+      import time
       import gi
       gi.require_version("Gio", "2.0")
       from gi.repository import Gio, GLib
@@ -789,14 +834,16 @@
       DEST = "org.freedesktop.ScreenSaver"
       PATH = "/org/freedesktop/ScreenSaver"
       IFACE = "org.freedesktop.ScreenSaver"
+      MARKER = os.path.expanduser("~/.cache/opencode/active")
+      STALE_AFTER = 60.0
 
       conn = Gio.bus_get_sync(Gio.BusType.SESSION, None)
 
-      def opencode_running():
+      def agent_active():
           try:
-              return subprocess.run(
-                  ["pgrep", "-x", "opencode"], capture_output=True
-              ).returncode == 0
+              if not os.path.exists(MARKER):
+                  return False
+              return (time.time() - os.path.getmtime(MARKER)) < STALE_AFTER
           except Exception:
               return False
 
@@ -805,7 +852,7 @@
       def tick():
           global cookie
           try:
-              if opencode_running():
+              if agent_active():
                   if cookie is None:
                       res = conn.call_sync(
                           DEST, PATH, IFACE, "Inhibit",
